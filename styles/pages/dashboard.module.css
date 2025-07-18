@@ -1,0 +1,69 @@
+/* styles/pages/user-dashboard.module.css */
+
+/* =============== SECTIONS =============== */
+.searchSection {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.quickActions,
+.recentActivities {
+  width: 100%;
+  margin-bottom: 32px;
+}
+
+.sectionTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.5px;
+  position: relative;
+  padding-left: 20px;
+}
+
+.sectionTitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 28px;
+  background: linear-gradient(180deg, #10b981, #059669);
+  border-radius: 3px;
+}
+
+/* =============== QUICK ACTIONS =============== */
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* =============== RECENT ACTIVITIES =============== */
+.activityList {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (max-width: 768px) {
+  .actionGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sectionTitle {
+    font-size: 20px;
+  }
+}

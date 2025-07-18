@@ -1,0 +1,440 @@
+/* styles/components/equipment-table.module.css */
+
+.tableContainer {
+  width: 100%;
+}
+
+/* =============== TABLE ACTIONS =============== */
+.tableActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tableInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.resultCount {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.selectedCount {
+  color: #3b82f6;
+  font-weight: 600;
+}
+
+.bulkActions {
+  display: flex;
+  gap: 8px;
+}
+
+.bulkActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.bulkActionBtn:hover {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* =============== TABLE =============== */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+}
+
+.tableHead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.tableHeader,
+.sortableHeader {
+  padding: 16px 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.sortableHeader:hover {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+.sorted {
+  background: #e5e7eb;
+  color: #3b82f6;
+}
+
+.sortIndicator {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.checkboxCell {
+  width: 48px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.actionsHeader {
+  width: 140px;
+  padding: 16px 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============== TABLE BODY =============== */
+.tableBody .tableRow {
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.tableRow:hover {
+  background: #f8f9fa;
+}
+
+.selectedRow {
+  background: #eff6ff;
+  border-color: #dbeafe;
+}
+
+.tableRow td {
+  padding: 16px 12px;
+  vertical-align: middle;
+}
+
+/* =============== CELL STYLES =============== */
+.nameCell {
+  min-width: 200px;
+}
+
+.equipmentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.equipmentName {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.equipmentId {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.categoryCell {
+  min-width: 120px;
+}
+
+.categoryTag {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e0e7ff;
+  color: #3730a3;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.modelCell {
+  min-width: 160px;
+}
+
+.modelInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.modelName {
+  font-weight: 500;
+  color: #1f2937;
+  font-size: 13px;
+}
+
+.serialNumber {
+  font-size: 11px;
+  color: #6b7280;
+  font-family: 'Monaco', 'Menlo', monospace;
+}
+
+/* =============== STATUS BADGES =============== */
+.statusCell {
+  min-width: 120px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.statusAvailable {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.statusBorrowed {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.statusMaintenance {
+  background: #fde68a;
+  color: #b45309;
+}
+
+.statusBroken {
+  background: #fecaca;
+  color: #991b1b;
+}
+
+.statusIconAvailable {
+  color: #16a34a;
+}
+
+.statusIconBorrowed {
+  color: #d97706;
+}
+
+.statusIconMaintenance {
+  color: #ea580c;
+}
+
+.statusIconBroken {
+  color: #dc2626;
+}
+
+.locationCell {
+  min-width: 120px;
+  font-size: 13px;
+  color: #4b5563;
+}
+
+.borrowCountCell {
+  min-width: 80px;
+  text-align: center;
+}
+
+.borrowCount {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: center;
+}
+
+.dateCell {
+  min-width: 100px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* =============== ACTIONS =============== */
+.actionsCell {
+  width: 140px;
+  text-align: center;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.actionBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: #3b82f6;
+  color: white;
+  transform: scale(1.1);
+}
+
+.deleteBtn:hover {
+  background: #ef4444;
+  color: white;
+}
+
+/* =============== CHECKBOX =============== */
+.checkbox {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+/* =============== EMPTY STATE =============== */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background: #ffffff;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin: 0 0 8px 0;
+}
+
+.emptyText {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (max-width: 1024px) {
+  .tableWrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .table {
+    min-width: 800px;
+  }
+  
+  .tableActions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  
+  .bulkActions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .tableActions {
+    padding: 16px 20px;
+  }
+  
+  .table {
+    min-width: 900px;
+  }
+  
+  .tableHeader,
+  .sortableHeader {
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+  
+  .tableRow td {
+    padding: 12px 8px;
+  }
+  
+  .actionButtons {
+    gap: 4px;
+  }
+  
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tableActions {
+    padding: 12px 16px;
+  }
+  
+  .bulkActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .bulkActionBtn {
+    justify-content: center;
+  }
+  
+  .emptyState {
+    padding: 40px 16px;
+  }
+  
+  .emptyIcon {
+    font-size: 36px;
+  }
+  
+  .emptyTitle {
+    font-size: 16px;
+  }
+  
+  .emptyText {
+    font-size: 13px;
+  }
+}

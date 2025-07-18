@@ -1,0 +1,222 @@
+/* styles/components/footer.module.css */
+
+/* =============== FOOTER =============== */
+.footer {
+  background: #1f2937;
+  color: #f9fafb;
+  margin-top: auto;
+  width: 100%;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 32px 20px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footerLogoIcon {
+  width: 40px;
+  height: 40px;
+  background: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15);
+}
+
+.footerLogoText {
+  flex: 1;
+}
+
+.footerLogoTextThai {
+  font-size: 16px;
+  font-weight: 600;
+  color: #10b981;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.footerLogoTextEn {
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  letter-spacing: 0.5px;
+}
+
+.footerSections {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerSection h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  border-bottom: 1px solid #10b981;
+  padding-bottom: 4px;
+}
+
+.footerSection p {
+  font-size: 12px;
+  color: #d1d5db;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.footerSection ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footerSection li {
+  margin-bottom: 4px;
+}
+
+.footerSection a {
+  color: #d1d5db;
+  text-decoration: none;
+  font-size: 12px;
+  line-height: 1.4;
+  transition: color 0.2s;
+}
+
+.footerSection a:hover {
+  color: #10b981;
+}
+
+.footerBottom {
+  border-top: 1px solid #374151;
+  padding: 16px 32px;
+  text-align: center;
+  background: #111827;
+}
+
+.footerBottom p {
+  margin: 0;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (max-width: 1023px) {
+  .footerContent {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 24px 24px 16px;
+  }
+  
+  .footerSections {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footerContent {
+    padding: 20px 20px 12px;
+    gap: 16px;
+  }
+  
+  .footerSections {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .footerLogo {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  
+  .footerLogoTextThai {
+    font-size: 14px;
+  }
+  
+  .footerLogoTextEn {
+    font-size: 10px;
+  }
+  
+  .footerBottom {
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footerContent {
+    padding: 16px 16px 10px;
+    gap: 12px;
+  }
+  
+  .footerLogoTextThai {
+    font-size: 12px;
+  }
+  
+  .footerLogoTextEn {
+    font-size: 9px;
+  }
+  
+  .footerSection h4 {
+    font-size: 12px;
+  }
+  
+  .footerSection p,
+  .footerSection a {
+    font-size: 11px;
+  }
+  
+  .footerBottom {
+    padding: 10px 16px;
+  }
+  
+  .footerBottom p {
+    font-size: 10px;
+  }
+}
+
+/* =============== MOBILE LANDSCAPE =============== */
+@media (max-width: 768px) and (orientation: landscape) {
+  .footerContent {
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+  }
+  
+  .footerSections {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+/* =============== TABLET SPECIFIC =============== */
+@media (min-width: 769px) and (max-width: 1023px) {
+  .footerContent {
+    grid-template-columns: 1fr 2fr;
+    gap: 24px;
+    padding: 28px 24px 18px;
+  }
+  
+  .footerSections {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}

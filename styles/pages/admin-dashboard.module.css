@@ -1,0 +1,349 @@
+/* styles/pages/admin-dashboard.module.css */
+
+.dashboardPage {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.loadingContainer {
+  height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* =============== PAGE HEADER =============== */
+.pageHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 24px 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+}
+
+.headerInfo h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+}
+
+.pageSubtitle {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dateTime {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* =============== STATS GRIDS =============== */
+.mainStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 8px;
+}
+
+.secondaryStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+/* =============== CONTENT GRID =============== */
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.leftColumn,
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =============== WIDGET CARDS =============== */
+.widgetCard {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.widgetTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  padding: 20px 24px 0;
+  position: relative;
+}
+
+.widgetTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 24px;
+  width: 40px;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 2px;
+}
+
+/* =============== CHARTS SECTION =============== */
+.chartsSection {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.chartCard {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+  padding: 24px;
+}
+
+.chartTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.chartTitle::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 2px;
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (max-width: 1200px) {
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .mainStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .pageHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .headerActions {
+    justify-content: center;
+  }
+  
+  .mainStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  
+  .secondaryStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageHeader {
+    padding: 20px;
+  }
+  
+  .pageTitle {
+    font-size: 24px;
+  }
+  
+  .pageSubtitle {
+    font-size: 14px;
+  }
+  
+  .mainStatsGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .secondaryStatsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  
+  .contentGrid {
+    gap: 16px;
+  }
+  
+  .leftColumn,
+  .rightColumn {
+    gap: 16px;
+  }
+  
+  .widgetTitle {
+    font-size: 16px;
+    padding: 16px 20px 0;
+  }
+  
+  .widgetTitle::after {
+    left: 20px;
+    width: 30px;
+  }
+  
+  .chartCard {
+    padding: 20px;
+  }
+  
+  .chartTitle {
+    font-size: 18px;
+  }
+  
+  .chartTitle::after {
+    width: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageHeader {
+    padding: 16px;
+  }
+  
+  .pageTitle {
+    font-size: 20px;
+  }
+  
+  .pageSubtitle {
+    font-size: 13px;
+  }
+  
+  .dateTime {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  
+  .secondaryStatsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .widgetTitle {
+    font-size: 15px;
+    padding: 14px 16px 0;
+  }
+  
+  .widgetTitle::after {
+    left: 16px;
+    width: 25px;
+    height: 2px;
+  }
+  
+  .chartCard {
+    padding: 16px;
+  }
+  
+  .chartTitle {
+    font-size: 16px;
+  }
+  
+  .chartTitle::after {
+    width: 40px;
+    height: 2px;
+  }
+}
+
+/* =============== ANIMATIONS =============== */
+.widgetCard {
+  animation: slideInUp 0.6s ease-out;
+}
+
+.chartCard {
+  animation: slideInUp 0.8s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============== STAGGER ANIMATIONS =============== */
+.mainStatsGrid > *:nth-child(1) { animation-delay: 0.1s; }
+.mainStatsGrid > *:nth-child(2) { animation-delay: 0.2s; }
+.mainStatsGrid > *:nth-child(3) { animation-delay: 0.3s; }
+.mainStatsGrid > *:nth-child(4) { animation-delay: 0.4s; }
+
+.secondaryStatsGrid > *:nth-child(1) { animation-delay: 0.5s; }
+.secondaryStatsGrid > *:nth-child(2) { animation-delay: 0.6s; }
+.secondaryStatsGrid > *:nth-child(3) { animation-delay: 0.7s; }
+
+.leftColumn > *:nth-child(1) { animation-delay: 0.8s; }
+.leftColumn > *:nth-child(2) { animation-delay: 1.0s; }
+
+.rightColumn > *:nth-child(1) { animation-delay: 0.9s; }
+.rightColumn > *:nth-child(2) { animation-delay: 1.1s; }

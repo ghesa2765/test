@@ -1,0 +1,318 @@
+/* styles/components/quick-action-card.module.css */
+
+.actionCard {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+
+.actionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.actionCard:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.actionCard:hover::before {
+  transform: scaleX(1);
+}
+
+.actionCard:hover .actionArrow {
+  transform: translateX(4px);
+}
+
+/* =============== COLOR VARIANTS =============== */
+.blue {
+  border-color: rgba(59, 130, 246, 0.1);
+}
+
+.blue::before {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.blue .actionIcon {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1d4ed8;
+}
+
+.green {
+  border-color: rgba(16, 185, 129, 0.1);
+}
+
+.green::before {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.green .actionIcon {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #059669;
+}
+
+.orange {
+  border-color: rgba(245, 158, 11, 0.1);
+}
+
+.orange::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.orange .actionIcon {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #d97706;
+}
+
+.purple {
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+.purple::before {
+  background: linear-gradient(90deg, #7c3aed, #5b21b6);
+}
+
+.purple .actionIcon {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  color: #5b21b6;
+}
+
+.red {
+  border-color: rgba(239, 68, 68, 0.1);
+}
+
+.red::before {
+  background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.red .actionIcon {
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
+  color: #dc2626;
+}
+
+.indigo {
+  border-color: rgba(99, 102, 241, 0.1);
+}
+
+.indigo::before {
+  background: linear-gradient(90deg, #6366f1, #4f46e5);
+}
+
+.indigo .actionIcon {
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  color: #4f46e5;
+}
+
+/* =============== ACTION ELEMENTS =============== */
+.actionIcon {
+  width: 56px;
+  height: 56px;
+  background: #f8f9fa;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  color: #10b981;
+  stroke-width: 1.5; /* สำหรับ SVG icons */
+}
+
+.actionCard:hover .actionIcon {
+  transform: scale(1.05);
+}
+
+.actionContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.actionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+.actionDescription {
+  font-size: 14px;
+  color: #6b7280;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.actionArrow {
+  color: #9ca3af;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+/* =============== GRID LAYOUT =============== */
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 768px) {
+  .actionsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .actionCard {
+    padding: 20px;
+    gap: 14px;
+  }
+  
+  .actionIcon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .actionTitle {
+    font-size: 15px;
+  }
+  
+  .actionDescription {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .actionCard {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .actionIcon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .actionTitle {
+    font-size: 14px;
+  }
+  
+  .actionDescription {
+    font-size: 12px;
+  }
+}
+
+/* =============== SECTION TITLE =============== */
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+  position: relative;
+  padding-left: 16px;
+}
+
+.sectionTitle::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+  border-radius: 2px;
+}
+
+/* =============== ACCESSIBILITY =============== */
+.actionCard:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionCard {
+    transition: none;
+  }
+  
+  .actionIcon {
+    transition: none;
+  }
+  
+  .actionArrow {
+    transition: none;
+  }
+  
+  .actionCard:hover {
+    transform: none;
+  }
+  
+  .actionCard:hover .actionIcon {
+    transform: none;
+  }
+  
+  .actionCard:hover .actionArrow {
+    transform: none;
+  }
+}
+
+/* =============== DARK MODE SUPPORT =============== */
+@media (prefers-color-scheme: dark) {
+  .actionCard {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
+  }
+  
+  .actionTitle {
+    color: #f9fafb;
+  }
+  
+  .actionDescription {
+    color: #d1d5db;
+  }
+  
+  .actionArrow {
+    color: #6b7280;
+  }
+  
+  .sectionTitle {
+    color: #f9fafb;
+  }
+}
+
+/* =============== PRINT STYLES =============== */
+@media print {
+  .actionCard {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    page-break-inside: avoid;
+  }
+  
+  .actionCard::before {
+    display: none;
+  }
+  
+  .actionArrow {
+    display: none;
+  }
+}

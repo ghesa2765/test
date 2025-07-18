@@ -1,0 +1,227 @@
+/* styles/components/stats-card.module.css */
+
+.statCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transition: transform 0.3s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+}
+
+/* =============== COLOR VARIANTS =============== */
+.blue {
+  border-color: rgba(59, 130, 246, 0.1);
+}
+
+.blue::before {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+}
+
+.blue .statIcon {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #1d4ed8;
+}
+
+.orange {
+  border-color: rgba(245, 158, 11, 0.1);
+}
+
+.orange::before {
+  background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.orange .statIcon {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #d97706;
+}
+
+.green {
+  border-color: rgba(16, 185, 129, 0.1);
+}
+
+.green::before {
+  background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.green .statIcon {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #059669;
+}
+
+.purple {
+  border-color: rgba(124, 58, 237, 0.1);
+}
+
+.purple::before {
+  background: linear-gradient(90deg, #7c3aed, #5b21b6);
+}
+
+.purple .statIcon {
+  background: linear-gradient(135deg, #f5f3ff, #ede9fe);
+  color: #5b21b6;
+}
+
+/* =============== STAT ELEMENTS =============== */
+.statIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.statCard:hover .statIcon {
+  transform: scale(1.05);
+}
+
+.statContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statNumber {
+  font-size: 32px;
+  font-weight: 900;
+  color: #1a1a1a;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statChange {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.statChange.increase {
+  color: #059669;
+}
+
+.statChange.decrease {
+  color: #dc2626;
+}
+
+.statChange.neutral {
+  color: #6b7280;
+}
+
+.trendIcon {
+  flex-shrink: 0;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 768px) {
+  .statCard {
+    padding: 20px;
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+  
+  .statIcon {
+    width: 56px;
+    height: 56px;
+  }
+  
+  .statNumber {
+    font-size: 28px;
+  }
+  
+  .statLabel {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statCard {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  .statIcon {
+    width: 48px;
+    height: 48px;
+  }
+  
+  .statNumber {
+    font-size: 24px;
+  }
+  
+  .statLabel {
+    font-size: 12px;
+  }
+  
+  .statChange {
+    font-size: 11px;
+  }
+}
+
+/* =============== ACCESSIBILITY =============== */
+@media (prefers-reduced-motion: reduce) {
+  .statCard {
+    transition: none;
+  }
+  
+  .statIcon {
+    transition: none;
+  }
+  
+  .statCard:hover {
+    transform: none;
+  }
+  
+  .statCard:hover .statIcon {
+    transform: none;
+  }
+}
+
+/* =============== PRINT STYLES =============== */
+@media print {
+  .statCard {
+    box-shadow: none !important;
+    border: 1px solid #000 !important;
+    page-break-inside: avoid;
+  }
+  
+  .statCard::before {
+    display: none;
+  }
+}

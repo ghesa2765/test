@@ -1,0 +1,184 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { Eye, EyeOff, User, Lock } from 'lucide-react';
+import styles from './login.module.css';
+
+export default function AuthLoginPage() {
+  const [studentId, setStudentId] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const router = useRouter();
+
+  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // ตรวจสอบ username และ password ที่กำหนด
+    if (studentId === '6606276' && password === 'Aa1234567') {
+      setShowSuccess(true);
+      setShowError(false);
+      
+      // Set session cookie if remember me is checked
+      if (rememberMe) {
+        document.cookie = 'user_session=true; path=/; max-age=604800'; // 7 days
+      } else {
+        document.cookie = 'user_session=true; path=/'; // Session only
+      }
+      
+      // รอ 2 วินาที แล้ว redirect ไปหน้า dashboard
+      setTimeout(() => {
+        router.push('/user/dashboard');
+      }, 2000);
+    } else {
+      setShowError(true);
+      setShowSuccess(false);
+      
+      // ซ่อน error message หลัง 3 วินาที
+      setTimeout(() => {
+        setShowError(false);
+      }, 3000);
+    }
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  return (
+    <div className={styles.container}>
+
+      {/* Main Content */}
+      <div className={styles.mainContent}>
+        {/* Logo Section */}
+        <div className={styles.logoSection}>
+          <img 
+            src="/logo.png" 
+            alt="RSU Logo" 
+            className={styles.logo}
+          />
+          <p className={styles.clinicText}>คลินิกเวชกรรมมหาวิทยาลัยรังสิต</p>
+          <p className={styles.clinicTextEn}>RSU MEDICAL CLINIC</p>
+        </div>
+
+        {/* Language Selector */}
+        <div className={styles.langSelector}>
+          <button className={`${styles.langBtn} ${styles.langBtnActive}`}>
+            <span className={styles.checkIcon}>✓</span>
+            ภาษาไทย
+          </button>
+          <button className={styles.langBtn}>
+            <span className={styles.checkIcon}>✓</span>
+            English
+          </button>
+        </div>
+
+        {/* Login Form */}
+        <form onSubmit={handleLogin} className={styles.loginForm}>
+          <div className={styles.formGroup}>
+            <div className={styles.inputWrapper}>
+              <User className={styles.inputIcon} size={20} />
+              <input 
+                type="text" 
+                placeholder="รหัสนักศึกษา/บุคลากร"
+                className={styles.input}
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                pattern="[0-9]{7}"
+                maxLength={7}
+                required
+              />
+            </div>
+          </div>
+
+          <div className={styles.formGroup}>
+            <div className={styles.inputWrapper}>
+              <Lock className={styles.inputIcon} size={20} />
+              <input 
+                type={showPassword ? "text" : "password"}
+                placeholder="รหัสผ่าน"
+                className={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className={styles.passwordToggle}
+                onClick={togglePasswordVisibility}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
+          </div>
+
+          {/* Remember Me and Forgot Password */}
+          <div className={styles.formOptions}>
+            <label className={styles.checkboxLabel}>
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span className={styles.checkmark}></span>
+              จดจำการเข้าสู่ระบบ
+            </label>
+            <Link href="/auth/forgot" className={styles.forgotPassword}>
+              ลืมรหัสผ่าน?
+            </Link>
+          </div>
+
+          <button type="submit" className={styles.loginButton}>
+            เข้าสู่ระบบ
+          </button>
+
+          <div className={styles.registerSection}>
+            <p>ยังไม่มีบัญชี?</p>
+            <Link href="/auth/register" className={styles.registerLink}>
+              ลงทะเบียนที่นี่
+            </Link>
+          </div>
+        </form>
+
+        {/* Back Button */}
+        <Link href="/" className={styles.backLink}>
+          <span className={styles.backIcon}>‹</span>
+          ย้อนกลับ
+        </Link>
+
+        {/* Demo Credentials */}
+        <div className={styles.demoCredentials}>
+          <h4>ข้อมูลทดสอบ:</h4>
+          <p><strong>รหัสนักศึกษา:</strong> 6606276</p>
+          <p><strong>รหัสผ่าน:</strong> Aa1234567</p>
+        </div>
+      </div>
+
+      {/* Success Popup */}
+      {showSuccess && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <div className={styles.successIcon}>✓</div>
+            <h3 className={styles.popupTitle}>เข้าสู่ระบบสำเร็จ!</h3>
+            <p className={styles.popupText}>กำลังนำคุณไปยังหน้าหลัก...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Popup */}
+      {showError && (
+        <div className={styles.popupOverlay}>
+          <div className={`${styles.popup} ${styles.errorPopup}`}>
+            <div className={styles.errorIcon}>✕</div>
+            <h3 className={styles.popupTitle}>เข้าสู่ระบบไม่สำเร็จ</h3>
+            <p className={styles.popupText}>รหัสนักศึกษา/บุคลากร หรือรหัสผ่านไม่ถูกต้อง</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

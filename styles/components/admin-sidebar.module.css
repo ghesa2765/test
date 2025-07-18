@@ -1,0 +1,357 @@
+/* styles/components/admin-sidebar.module.css */
+
+/* =============== ADMIN SIDEBAR =============== */
+.adminSidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-right: 1px solid #334155;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+}
+
+.collapsed {
+  width: 80px;
+}
+
+/* =============== SIDEBAR HEADER =============== */
+.sidebarHeader {
+  padding: 36px 24px;
+  border-bottom: 1px solid #334155;
+  position: relative;
+  background: linear-gradient(180deg, #1e293b 0%, #334155 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+}
+
+.adminBadge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 16px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.sidebarClose,
+.collapseBtn {
+  position: absolute;
+  top: 24px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.sidebarClose {
+  right: 24px;
+}
+
+.collapseBtn {
+  left: 24px;
+}
+
+.sidebarClose:hover,
+.collapseBtn:hover {
+  background: #3b82f6;
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+/* =============== SIDEBAR NAVIGATION =============== */
+.sidebarNav {
+  flex: 1;
+  padding: 24px 0;
+  overflow-y: auto;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  padding: 14px 24px;
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  margin: 4px 16px;
+  border-radius: 12px;
+  gap: 16px;
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.navLink:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  transform: translateX(4px);
+}
+
+.active {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+}
+
+.active::before {
+  content: '';
+  position: absolute;
+  left: -16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 28px;
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+  border-radius: 0 4px 4px 0;
+}
+
+.navIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* =============== BADGES =============== */
+.badge {
+  margin-left: auto;
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(107, 114, 128, 0.4);
+}
+
+.badgeWarning {
+  margin-left: auto;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.4);
+}
+
+.badgeDanger {
+  margin-left: auto;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+}
+
+.badgeSuccess {
+  margin-left: auto;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+}
+
+.badgeInfo {
+  margin-left: auto;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+}
+
+/* =============== SIDEBAR ADMIN INFO =============== */
+.sidebarAdmin {
+  padding: 24px;
+  border-top: 1px solid #334155;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.adminAvatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.adminInfo {
+  flex: 1;
+}
+
+.adminName {
+  font-weight: 700;
+  color: #f1f5f9;
+  font-size: 15px;
+  margin: 0 0 4px 0;
+}
+
+.adminRole {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+  margin: 0 0 2px 0;
+}
+
+.adminId {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* =============== LOGOUT BUTTON =============== */
+.logoutButton {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 18px 28px;
+  border-radius: 16px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 30px rgba(239, 68, 68, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  backdrop-filter: blur(10px);
+}
+
+.logoutButton:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 12px 40px rgba(239, 68, 68, 0.5);
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (min-width: 1024px) {
+  .adminSidebar {
+    transform: translateX(0);
+    position: fixed;
+  }
+  
+  .sidebarClose {
+    display: none;
+  }
+  
+  .collapsed {
+    width: 80px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .collapseBtn {
+    display: none;
+  }
+  
+  .adminSidebar {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .logoutButton {
+    bottom: 20px;
+    right: 20px;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adminSidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* =============== COLLAPSED SIDEBAR ADJUSTMENTS =============== */
+.collapsed .navLink {
+  justify-content: center;
+  padding: 16px;
+  margin: 4px 12px;
+}
+
+.collapsed .sidebarAdmin {
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.collapsed .adminInfo {
+  display: none;
+}
+
+.collapsed .adminBadge {
+  display: none;
+}
+
+/* =============== FOCUS STATES =============== */
+.navLink:focus,
+.collapseBtn:focus,
+.sidebarClose:focus,
+.logoutButton:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
