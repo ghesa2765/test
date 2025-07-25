@@ -1,0 +1,492 @@
+/* app/user/smart-booking/smart-booking.module.css */
+
+.pageContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fafafa 0%, #f8f9fa 100%);
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Thai', sans-serif;
+  color: #1a1a1a;
+}
+
+/* =============== HEADER =============== */
+.header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+}
+
+.headerIcon {
+  width: 60px;
+  height: 60px;
+  background: #10b981;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.headerText h1 {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.headerText p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* =============== SECTION CARD =============== */
+.sectionCard {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e5e7eb;
+}
+
+.sectionHeader {
+  margin-bottom: 20px;
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+/* =============== EQUIPMENT GRID =============== */
+.equipmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.equipmentCard {
+  background: #f8f9fa;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 200px;
+}
+
+.equipmentCard:hover:not(.unavailable) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+  background: #f0fdf4;
+}
+
+.equipmentCard.unavailable {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+.equipmentIcon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.equipmentInfo {
+  flex: 1;
+  margin-bottom: 12px;
+}
+
+.equipmentInfo h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.equipmentId {
+  font-size: 12px;
+  color: #10b981;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.equipmentLocation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.equipmentStatus {
+  margin-top: auto;
+}
+
+.statusAvailable {
+  background: #d1fae5;
+  color: #065f46;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusBusy {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.clickHint {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #10b981;
+  color: white;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.equipmentCard:hover .clickHint {
+  opacity: 1;
+}
+
+/* =============== MODAL =============== */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modalHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.modalContent {
+  padding: 24px;
+}
+
+/* =============== EQUIPMENT DETAILS =============== */
+.equipmentDetails {
+  background: #f0fdf4;
+  border: 1px solid #10b981;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.equipmentDetails h4 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.equipmentDetails p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* =============== FORM ELEMENTS =============== */
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.dateInput,
+.timeSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.dateInput:focus,
+.timeSelect:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.timeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.purposeTextarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.purposeTextarea:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+/* =============== RULES BOX =============== */
+.rulesBox {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0;
+}
+
+.rulesBox h5 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.rulesBox ul {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: #92400e;
+  line-height: 1.4;
+}
+
+.rulesBox li {
+  margin-bottom: 2px;
+}
+
+/* =============== MODAL ACTIONS =============== */
+.modalActions {
+  padding: 16px 24px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  gap: 12px;
+}
+
+.cancelButton {
+  flex: 1;
+  padding: 10px 16px;
+  background: white;
+  color: #6b7280;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelButton:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.confirmButton {
+  flex: 1;
+  padding: 10px 16px;
+  background: #10b981;
+  color: white;
+  border: 2px solid #10b981;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background: #059669;
+  border-color: #059669;
+}
+
+.confirmButton:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* =============== RESPONSIVE =============== */
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 12px;
+  }
+
+  .header {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .headerIcon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .headerText h1 {
+    font-size: 20px;
+  }
+
+  .equipmentGrid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .equipmentCard {
+    min-height: 160px;
+    padding: 16px;
+  }
+
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+
+  .modalContent {
+    padding: 20px;
+  }
+
+  .timeRow {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 8px;
+  }
+
+  .header {
+    padding: 16px;
+  }
+
+  .headerText h1 {
+    font-size: 18px;
+  }
+
+  .sectionCard {
+    padding: 16px;
+  }
+
+  .equipmentCard {
+    min-height: 140px;
+    padding: 12px;
+  }
+
+  .equipmentIcon {
+    font-size: 32px;
+  }
+
+  .modalHeader {
+    padding: 16px 20px;
+  }
+
+  .modalContent {
+    padding: 16px;
+  }
+
+  .modalActions {
+    padding: 12px 20px;
+  }
+}

@@ -2,211 +2,395 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { 
+  Package2, Users, ClipboardCheck, AlertTriangle,
+  TrendingUp, TrendingDown, Activity, Plus,
+  Eye, Edit, Trash2, CheckCircle, Clock, XCircle
+} from 'lucide-react'
 import styles from '@/styles/pages/admin-dashboard.module.css'
 
-// SVG Icons
-const DashboardIcon = () => (
-  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-  </svg>
-)
+// Mock Data - ในอนาคตจะมาจาก API
+const statsData = {
+  totalEquipment: 124,
+  availableEquipment: 89,
+  borrowedEquipment: 23,
+  maintenanceEquipment: 12,
+  totalUsers: 1,
+  activeUsers: 856,
+  totalBorrows: 2341,
+  overdueItems: 7
+}
 
-const UsersIcon = () => (
-  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-    <circle cx="12" cy="7" r="4"/>
-  </svg>
-)
+const recentActivities = [
+  {
+    id: 1,
+    type: 'borrow',
+    user: 'นิคม ใจดี',
+    equipment: 'เครื่องวัดความดันโลหิต',
+    action: 'ยืมอุปกรณ์',
+    time: '10 นาทีที่แล้ว',
+    status: 'success'
+  },
+  {
+    id: 2,
+    type: 'return',
+    user: 'สมหญิง รักดี',
+    equipment: 'ชุดตรวจหูคอจมูก',
+    action: 'คืนอุปกรณ์',
+    time: '25 นาทีที่แล้ว',
+    status: 'success'
+  },
+  {
+    id: 3,
+    type: 'maintenance',
+    user: 'ระบบ',
+    equipment: 'เครื่อง Ultrasound',
+    action: 'เข้าสู่การบำรุงรักษา',
+    time: '1 ชั่วโมงที่แล้ว',
+    status: 'warning'
+  },
+  {
+    id: 4,
+    type: 'overdue',
+    user: 'วิชัย ใจเย็น',
+    equipment: 'เครื่องวัดน้ำตาล',
+    action: 'เกินกำหนดคืน',
+    time: '2 ชั่วโมงที่แล้ว',
+    status: 'danger'
+  }
+]
 
-const EquipmentIcon = () => (
-  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <rect x="2" y="6" width="20" height="8" rx="1"/>
-    <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01"/>
-  </svg>
-)
+const pendingApprovals = [
+  {
+    id: 'BR001',
+    requester: 'สมหญิง รักดี',
+    studentId: '6606123',
+    equipment: 'เครื่องวัดความดันโลหิต OMRON',
+    requestDate: '2025-01-18',
+    requestedDate: '2025-01-19',
+    priority: 'normal',
+    purpose: 'ฝึกปฏิบัติการพยาบาล'
+  },
+  {
+    id: 'BR002',
+    requester: 'วิชัย ใจเย็น',
+    studentId: '6606124',
+    equipment: 'ชุดตรวจหูคอจมูก',
+    requestDate: '2025-01-18',
+    requestedDate: '2025-01-20',
+    priority: 'urgent',
+    purpose: 'การสอบปฏิบัติ'
+  }
+]
 
-const SettingsIcon = () => (
-  <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-  </svg>
-)
+interface StatCardProps {
+  title: string
+  value: number | string
+  change?: number
+  changeType?: 'increase' | 'decrease'
+  icon: React.ReactNode
+  color: string
+  href?: string
+}
 
-const LogoutIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-    <polyline points="16,17 21,12 16,7"/>
-    <line x1="21" y1="12" x2="9" y2="12"/>
-  </svg>
-)
+function StatCard({ title, value, change, changeType, icon, color, href }: StatCardProps) {
+  const content = (
+    <div className={`${styles.statCard} ${styles[color]}`}>
+      <div className={styles.statCardHeader}>
+        <div className={styles.statCardIcon}>
+          {icon}
+        </div>
+        {change && (
+          <div className={`${styles.statCardChange} ${styles[changeType || 'increase']}`}>
+            {changeType === 'increase' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+            <span>{Math.abs(change)}%</span>
+          </div>
+        )}
+      </div>
+      
+      <div className={styles.statCardBody}>
+        <h3 className={styles.statCardValue}>{value}</h3>
+        <p className={styles.statCardTitle}>{title}</p>
+      </div>
+      
+      {change && (
+        <div className={styles.statCardFooter}>
+          <span className={styles.changeText}>
+            {changeType === 'increase' ? 'เพิ่มขึ้น' : 'ลดลง'} จากเดือนที่แล้ว
+          </span>
+        </div>
+      )}
+    </div>
+  )
 
-const HomeIcon = () => (
-  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9,22 9,12 15,12 15,22"/>
-  </svg>
-)
+  return href ? <Link href={href}>{content}</Link> : content
+}
 
 export default function AdminDashboard() {
-  const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
-  const [adminUser, setAdminUser] = useState<any>(null)
 
   useEffect(() => {
-    // ตรวจสอบการเข้าสู่ระบบ
-    const adminToken = localStorage.getItem('adminToken')
-    const adminUserData = localStorage.getItem('adminUser')
-    
-    if (!adminToken) {
-      router.push('/admin')
-      return
-    }
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 500)
 
-    if (adminUserData) {
-      setAdminUser(JSON.parse(adminUserData))
-    }
-    
-    setIsLoading(false)
-  }, [router])
-
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken')
-    localStorage.removeItem('adminUser')
-    router.push('/admin')
-  }
+    return () => clearTimeout(timer)
+  }, [])
 
   if (isLoading) {
     return (
       <div className={styles.loadingContainer}>
-        <div className={styles.loadingContent}>
-          <div className={styles.spinner}></div>
-          <p className={styles.loadingText}>กำลังโหลด...</p>
-        </div>
+        <div className={styles.loadingSpinner}></div>
+        <p>กำลังโหลดข้อมูล...</p>
       </div>
     )
   }
 
   return (
-    <div className={styles.container}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <img 
-            src="/logo.png" 
-            alt="RSU Logo" 
-            className={styles.logo}
-          />
-          <div>
-            <h1 className={styles.headerTitle}>ระบบผู้ดูแล</h1>
-            <p className={styles.headerSubtitle}>คลินิกเวชกรรมมหาวิทยาลัยรังสิต</p>
-          </div>
+    <div className={styles.dashboardContainer}>
+      
+      {/* Page Header */}
+      <div className={styles.pageHeader}>
+        <div className={styles.pageHeaderContent}>
+          <h1 className={styles.pageTitle}>แดชบอร์ดแอดมิน</h1>
+          <p className={styles.pageSubtitle}>ภาพรวมระบบยืมคืนอุปกรณ์การแพทย์</p>
         </div>
+        <div className={styles.pageHeaderActions}>
+          <Link href="/admin/equipment/add" className={styles.primaryButton}>
+            <Plus size={20} />
+            เพิ่มอุปกรณ์ใหม่
+          </Link>
+        </div>
+      </div>
+
+      {/* Stats Grid */}
+      <div className={styles.statsGrid}>
+        <StatCard
+          title="อุปกรณ์ทั้งหมด"
+          value={statsData.totalEquipment}
+          change={5.2}
+          changeType="increase"
+          icon={<Package2 size={24} />}
+          color="blue"
+          href="/admin/equipment"
+        />
         
-        <div className={styles.headerRight}>
-          <div className={styles.adminBadge}>
-            <span>🛡️</span>
-            <span>Admin: {adminUser?.username || 'admin'}</span>
+        <StatCard
+          title="อุปกรณ์พร้อมใช้"
+          value={statsData.availableEquipment}
+          change={2.1}
+          changeType="decrease"
+          icon={<CheckCircle size={24} />}
+          color="green"
+          href="/admin/equipment?status=available"
+        />
+        
+        <StatCard
+          title="อุปกรณ์ถูกยืม"
+          value={statsData.borrowedEquipment}
+          change={12.5}
+          changeType="increase"
+          icon={<Clock size={24} />}
+          color="yellow"
+          href="/admin/equipment?status=borrowed"
+        />
+        
+        <StatCard
+          title="ต้องบำรุงรักษา"
+          value={statsData.maintenanceEquipment}
+          change={8.3}
+          changeType="decrease"
+          icon={<AlertTriangle size={24} />}
+          color="red"
+          href="/admin/maintenance"
+        />
+      </div>
+
+      {/* Content Grid */}
+      <div className={styles.contentGrid}>
+        
+        {/* Pending Approvals */}
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>คำขออนุมัติล่าสุด</h2>
+              <div className={styles.cardBadge}>
+                {pendingApprovals.length} รายการ
+              </div>
+            </div>
+            
+            <div className={styles.cardBody}>
+              {pendingApprovals.length > 0 ? (
+                <div className={styles.approvalsList}>
+                  {pendingApprovals.map((request) => (
+                    <div key={request.id} className={styles.approvalItem}>
+                      <div className={styles.approvalInfo}>
+                        <h4 className={styles.approvalRequester}>{request.requester}</h4>
+                        <p className={styles.approvalEquipment}>{request.equipment}</p>
+                        <p className={styles.approvalDate}>วันที่ต้องการ: {request.requestedDate}</p>
+                        <p className={styles.approvalPurpose}>{request.purpose}</p>
+                      </div>
+                      
+                      <div className={styles.approvalActions}>
+                        <span className={`${styles.priorityBadge} ${styles[request.priority]}`}>
+                          {request.priority === 'urgent' ? 'ด่วน' : 'ปกติ'}
+                        </span>
+                        <div className={styles.actionButtons}>
+                          <button className={styles.approveBtn}>อนุมัติ</button>
+                          <button className={styles.rejectBtn}>ปฏิเสธ</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className={styles.emptyState}>
+                  <ClipboardCheck size={48} />
+                  <p>ไม่มีคำขอรออนุมัติ</p>
+                </div>
+              )}
+            </div>
+            
+            <div className={styles.cardFooter}>
+              <Link href="/admin/approvals" className={styles.viewAllLink}>
+                ดูทั้งหมด
+              </Link>
+            </div>
           </div>
-          
-          <button 
-            onClick={handleLogout}
-            className={styles.logoutButton}
-          >
-            <LogoutIcon />
-            ออกจากระบบ
-          </button>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className={styles.main}>
-        {/* Welcome Section */}
-        <section className={styles.welcomeSection}>
-          <h2 className={styles.welcomeTitle}>ยินดีต้อนรับสู่ระบบผู้ดูแล</h2>
-          <p className={styles.welcomeText}>
-            จัดการระบบยืม-จองอุปกรณ์การแพทย์ คลินิกเวชกรรมมหาวิทยาลัยรังสิต
-          </p>
-        </section>
+        {/* Recent Activities */}
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>กิจกรรมล่าสุด</h2>
+              <div className={styles.cardActions}>
+                <button className={styles.refreshBtn}>
+                  <Activity size={16} />
+                </button>
+              </div>
+            </div>
+            
+            <div className={styles.cardBody}>
+              <div className={styles.activitiesList}>
+                {recentActivities.map((activity) => (
+                  <div key={activity.id} className={styles.activityItem}>
+                    <div className={`${styles.activityIcon} ${styles[activity.status]}`}>
+                      {activity.type === 'borrow' && <Plus size={16} />}
+                      {activity.type === 'return' && <CheckCircle size={16} />}
+                      {activity.type === 'maintenance' && <AlertTriangle size={16} />}
+                      {activity.type === 'overdue' && <XCircle size={16} />}
+                    </div>
+                    
+                    <div className={styles.activityContent}>
+                      <p className={styles.activityText}>
+                        <span className={styles.activityUser}>{activity.user}</span>
+                        {' '}{activity.action}{' '}
+                        <span className={styles.activityEquipment}>{activity.equipment}</span>
+                      </p>
+                      <p className={styles.activityTime}>{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className={styles.cardFooter}>
+              <Link href="/admin/activities" className={styles.viewAllLink}>
+                ดูกิจกรรมทั้งหมด
+              </Link>
+            </div>
+          </div>
+        </div>
 
-        {/* Statistics */}
-        <div className={styles.statsGrid}>
-          <div className={styles.statCard}>
-            <div className={styles.statNumber}>156</div>
-            <div className={styles.statLabel}>รายการยืมทั้งหมด</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statNumber}>24</div>
-            <div className={styles.statLabel}>รออนุมัติ</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statNumber}>89</div>
-            <div className={styles.statLabel}>อุปกรณ์ว่าง</div>
-          </div>
-          <div className={styles.statCard}>
-            <div className={styles.statNumber}>12</div>
-            <div className={styles.statLabel}>ผู้ใช้ออนไลน์</div>
+        {/* Equipment Status Overview */}
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>สถานะอุปกรณ์</h2>
+            </div>
+            
+            <div className={styles.cardBody}>
+              <div className={styles.statusOverview}>
+                <div className={styles.statusItem}>
+                  <div className={styles.statusIndicator}>
+                    <div className={`${styles.statusDot} ${styles.available}`}></div>
+                    <span>พร้อมใช้งาน</span>
+                  </div>
+                  <span className={styles.statusCount}>89 (72%)</span>
+                </div>
+                
+                <div className={styles.statusItem}>
+                  <div className={styles.statusIndicator}>
+                    <div className={`${styles.statusDot} ${styles.borrowed}`}></div>
+                    <span>ถูกยืม</span>
+                  </div>
+                  <span className={styles.statusCount}>23 (18%)</span>
+                </div>
+                
+                <div className={styles.statusItem}>
+                  <div className={styles.statusIndicator}>
+                    <div className={`${styles.statusDot} ${styles.maintenance}`}></div>
+                    <span>ซ่อมบำรุง</span>
+                  </div>
+                  <span className={styles.statusCount}>8 (7%)</span>
+                </div>
+                
+                <div className={styles.statusItem}>
+                  <div className={styles.statusIndicator}>
+                    <div className={`${styles.statusDot} ${styles.broken}`}></div>
+                    <span>เสียหาย</span>
+                  </div>
+                  <span className={styles.statusCount}>4 (3%)</span>
+                </div>
+              </div>
+              
+              <div className={styles.statusChart}>
+                <div className={styles.chartBar}>
+                  <div className={`${styles.chartSegment} ${styles.available}`} style={{width: '72%'}}></div>
+                  <div className={`${styles.chartSegment} ${styles.borrowed}`} style={{width: '18%'}}></div>
+                  <div className={`${styles.chartSegment} ${styles.maintenance}`} style={{width: '7%'}}></div>
+                  <div className={`${styles.chartSegment} ${styles.broken}`} style={{width: '3%'}}></div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Quick Actions */}
-        <section className={styles.quickActions}>
-          <h3 className={styles.sectionTitle}>เมนูการจัดการ</h3>
-          <div className={styles.actionsGrid}>
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <div className={styles.cardHeader}>
+              <h2 className={styles.cardTitle}>การจัดการด่วน</h2>
+            </div>
             
-            <Link href="/admin/dashboard" className={styles.actionCard}>
-              <div className={styles.actionIcon}>
-                <DashboardIcon />
+            <div className={styles.cardBody}>
+              <div className={styles.quickActions}>
+                <Link href="/admin/equipment/add" className={styles.quickAction}>
+                  <Plus size={24} />
+                  <span>เพิ่มอุปกรณ์</span>
+                </Link>
+                
+                <Link href="/admin/users/add" className={styles.quickAction}>
+                  <Users size={24} />
+                  <span>เพิ่มผู้ใช้</span>
+                </Link>
+                
+                <Link href="/admin/reports" className={styles.quickAction}>
+                  <Activity size={24} />
+                  <span>ดูรายงาน</span>
+                </Link>
+                
+                <Link href="/admin/settings" className={styles.quickAction}>
+                  <AlertTriangle size={24} />
+                  <span>ตั้งค่าระบบ</span>
+                </Link>
               </div>
-              <span className={styles.actionText}>แดชบอร์ด</span>
-            </Link>
-
-            <Link href="/admin/users" className={styles.actionCard}>
-              <div className={styles.actionIcon}>
-                <UsersIcon />
-              </div>
-              <span className={styles.actionText}>จัดการผู้ใช้</span>
-            </Link>
-
-            <Link href="/admin/equipment" className={styles.actionCard}>
-              <div className={styles.actionIcon}>
-                <EquipmentIcon />
-              </div>
-              <span className={styles.actionText}>จัดการอุปกรณ์</span>
-            </Link>
-
-            <Link href="/admin/settings" className={styles.actionCard}>
-              <div className={styles.actionIcon}>
-                <SettingsIcon />
-              </div>
-              <span className={styles.actionText}>ตั้งค่าระบบ</span>
-            </Link>
+            </div>
           </div>
-
-          {/* Coming Soon Notice */}
-          <div className={styles.comingSoon}>
-            <strong>🚧 กำลังพัฒนา</strong>
-            <br />
-            ฟีเจอร์การจัดการต่างๆ กำลังอยู่ในระหว่างการพัฒนา จะเปิดให้ใช้งานเร็วๆ นี้
-          </div>
-        </section>
-      </main>
-
-      {/* Action Buttons */}
-      <div className={styles.actionButtons}>
-        {/* Home Button */}
-        <Link href="/" className={styles.homeButton}>
-          <HomeIcon />
-          หน้าหลัก
-        </Link>
-        
-        {/* Home Link (Red) */}
-        <Link href="/" className={styles.floatingLogoutButton}>
-          <LogoutIcon />
-          ออกจากระบบ
-        </Link>
+        </div>
       </div>
     </div>
   )

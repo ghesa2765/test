@@ -186,3 +186,453 @@
     display: none;
   }
 }
+/* เพิ่มโค้ดนี้ต่อท้ายไฟล์ dashboard.module.css */
+
+/* =============== ACTION CARDS =============== */
+.actionCard {
+  background: #ffffff;
+  padding: 32px 28px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.actionCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #10b981, #059669);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+
+.actionCard:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  text-decoration: none;
+  color: inherit;
+}
+
+.actionCard:hover::before {
+  transform: scaleX(1);
+}
+
+.actionIcon {
+  width: 56px;
+  height: 56px;
+  background: #f0fdf4;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.actionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.3px;
+}
+
+.actionDesc {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* =============== ACTIVITY ITEMS =============== */
+.activityItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 24px 28px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: all 0.2s;
+}
+
+.activityItem:last-child {
+  border-bottom: none;
+}
+
+.activityItem:hover {
+  background: #f8f9fa;
+  transform: translateX(4px);
+}
+
+.activityIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.activityIconSuccess {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  color: #059669;
+}
+
+.activityIconInfo {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  color: #2563eb;
+}
+
+.activityIconWarning {
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  color: #d97706;
+}
+
+.activityIconError {
+  background: linear-gradient(135deg, #fef2f2, #fecaca);
+  color: #dc2626;
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityText {
+  font-size: 15px;
+  color: #1a1a1a;
+  margin: 0 0 6px 0;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+.activityTime {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* =============== SEARCH RESULTS =============== */
+.searchResultsSection {
+  margin-bottom: 48px;
+}
+
+.searchResultsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.clearButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.noResults {
+  text-align: center;
+  padding: 48px 24px;
+  color: #6b7280;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* =============== EQUIPMENT GRID =============== */
+.equipmentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.equipmentCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.equipmentCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.equipmentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.equipmentIcon {
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.statusDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 4px;
+}
+
+.equipmentName {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.equipmentCode {
+  font-size: 14px;
+  color: #3b82f6;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.equipmentCategory {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 12px 0;
+}
+
+.equipmentDescription {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+}
+
+.equipmentLocation {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.equipmentFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.actionButton {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.borrowButton {
+  background: #10b981;
+  color: white;
+}
+
+.borrowButton:hover {
+  background: #059669;
+}
+
+.bookButton {
+  background: #3b82f6;
+  color: white;
+}
+
+.bookButton:hover {
+  background: #2563eb;
+}
+
+.dueDate {
+  font-size: 12px;
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+/* =============== FOCUS STATES =============== */
+.actionCard:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* =============== RESPONSIVE FOR EQUIPMENT CARDS =============== */
+@media (max-width: 768px) {
+  .equipmentGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .equipmentCard {
+    padding: 20px;
+  }
+  
+  .equipmentIcon {
+    width: 48px;
+    height: 48px;
+    font-size: 28px;
+  }
+  
+  .equipmentName {
+    font-size: 16px;
+  }
+  
+  .searchResultsHeader {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .clearButton {
+    align-self: flex-end;
+  }
+  
+  .actionCard {
+    padding: 24px 20px;
+  }
+  
+  .actionIcon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 16px;
+  }
+  
+  .actionTitle {
+    font-size: 17px;
+  }
+  
+  .actionDesc {
+    font-size: 14px;
+  }
+  
+  .activityItem {
+    padding: 20px 24px;
+    gap: 16px;
+  }
+  
+  .activityIcon {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .activityText {
+    font-size: 14px;
+  }
+  
+  .activityTime {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .equipmentCard {
+    padding: 16px;
+  }
+  
+  .equipmentIcon {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+  }
+  
+  .equipmentName {
+    font-size: 15px;
+  }
+  
+  .equipmentFooter {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .actionButtons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .actionButton {
+    flex: 1;
+  }
+  
+  .actionCard {
+    padding: 20px 16px;
+  }
+  
+  .actionIcon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 14px;
+  }
+  
+  .actionTitle {
+    font-size: 16px;
+  }
+  
+  .actionDesc {
+    font-size: 13px;
+  }
+  
+  .activityItem {
+    padding: 18px 20px;
+    gap: 14px;
+  }
+  
+  .activityIcon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .activityText {
+    font-size: 13px;
+  }
+  
+  .activityTime {
+    font-size: 11px;
+  }
+}
