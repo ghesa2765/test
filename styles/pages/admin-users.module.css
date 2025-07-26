@@ -1,7 +1,7 @@
-/* styles/pages/admin-equipment.module.css */
+/* styles/pages/admin-users.module.css */
 
 /* =============== PAGE LAYOUT =============== */
-.equipmentPage {
+.usersPage {
   padding: 0;
   min-height: 100vh;
   background: #f8fafc;
@@ -328,41 +328,17 @@
   color: #1f2937;
 }
 
-.tableActions {
-  display: flex;
-  gap: 8px;
-}
-
-.viewToggle {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  background: white;
-  color: #6b7280;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.viewToggle.active,
-.viewToggle:hover {
-  background: #3b82f6;
-  color: white;
-  border-color: #3b82f6;
-}
-
 /* =============== TABLE =============== */
 .tableWrapper {
   overflow-x: auto;
 }
 
-.equipmentTable {
+.usersTable {
   width: 100%;
   border-collapse: collapse;
 }
 
-.equipmentTable th {
+.usersTable th {
   background: #f8fafc;
   padding: 16px 12px;
   text-align: left;
@@ -387,7 +363,7 @@
   background: #f8fafc;
 }
 
-.equipmentTable td {
+.usersTable td {
   padding: 16px 12px;
   border-bottom: 1px solid #f1f5f9;
   vertical-align: top;
@@ -401,66 +377,47 @@
   cursor: pointer;
 }
 
-.codeCell {
-  min-width: 100px;
+/* User Cell */
+.userCell {
+  min-width: 200px;
 }
 
-.equipmentCode {
-  font-family: 'Monaco', 'Menlo', monospace;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1f2937;
-  background: #f3f4f6;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.nameCell {
-  min-width: 250px;
-}
-
-.equipmentName {
+.userInfo {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
 }
 
-.categoryIcon {
-  font-size: 20px;
-  width: 32px;
-  height: 32px;
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f3f4f6;
-  border-radius: 6px;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
-.name {
+.userDetails {
+  flex: 1;
+}
+
+.userName {
   font-weight: 600;
   color: #1f2937;
-  line-height: 1.4;
   margin-bottom: 2px;
 }
 
-.lastBorrow {
+.userUsername {
   font-size: 12px;
   color: #6b7280;
+  font-family: 'Monaco', 'Menlo', monospace;
 }
 
-.category {
-  display: inline-block;
-  background: #e0e7ff;
-  color: #3730a3;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-/* =============== STATUS BADGES =============== */
-.statusBadge {
+/* Role Badges */
+.roleBadge {
   display: inline-block;
   padding: 6px 12px;
   border-radius: 16px;
@@ -470,80 +427,144 @@
   letter-spacing: 0.5px;
 }
 
-.statusBadge.available {
-  background: #d1fae5;
-  color: #065f46;
-}
-
-.statusBadge.borrowed {
+.roleBadge.admin {
   background: #fef3c7;
   color: #92400e;
 }
 
-.statusBadge.maintenance {
-  background: #dbeafe;
-  color: #1e40af;
+.roleBadge.staff {
+  background: #e0e7ff;
+  color: #3730a3;
 }
 
-.statusBadge.damaged {
-  background: #fee2e2;
-  color: #991b1b;
+.roleBadge.user {
+  background: #d1fae5;
+  color: #065f46;
 }
 
-/* =============== CONDITION BADGES =============== */
-.conditionBadge {
+/* Department Cell */
+.departmentCell {
+  min-width: 150px;
+}
+
+.department {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 2px;
+}
+
+.position {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Contact Cell */
+.contactCell {
+  min-width: 200px;
+}
+
+.contactItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.contactItem:last-child {
+  margin-bottom: 0;
+}
+
+/* Status Cell */
+.statusContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statusBadge {
   display: inline-block;
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
+  max-width: fit-content;
 }
 
-.conditionBadge.excellent {
+.statusBadge.active {
   background: #d1fae5;
   color: #065f46;
 }
 
-.conditionBadge.good {
-  background: #dcfce7;
-  color: #166534;
+.statusBadge.inactive {
+  background: #fee2e2;
+  color: #991b1b;
 }
 
-.conditionBadge.fair {
+.statusBadge.unverified {
   background: #fef3c7;
   color: #92400e;
 }
 
-.conditionBadge.poor {
-  background: #fed7d7;
-  color: #991b1b;
+.statusIndicators {
+  display: flex;
+  gap: 4px;
 }
 
-.conditionBadge.damaged {
-  background: #fee2e2;
-  color: #7f1d1d;
+.indicator {
+  font-size: 10px;
 }
 
-/* =============== USAGE CELL =============== */
+/* Usage Cell */
 .usageCell {
-  min-width: 80px;
+  min-width: 100px;
 }
 
 .usageStats {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.borrowCount {
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statItem .statValue {
+  font-size: 14px;
   font-weight: 600;
   color: #1f2937;
-  font-size: 14px;
+  margin: 0;
 }
 
-/* =============== ACTIONS =============== */
+.statItem .statLabel {
+  font-size: 10px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Last Login Cell */
+.lastLoginCell {
+  min-width: 120px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Actions */
 .actions {
   display: flex;
+  flex-direction: column;
   gap: 8px;
+  min-width: 120px;
+}
+
+.actionGroup {
+  display: flex;
+  gap: 4px;
   justify-content: center;
 }
 
@@ -551,8 +572,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border: 1px solid #d1d5db;
   background: white;
   color: #4b5563;
@@ -565,6 +586,26 @@
 .actionButton:hover {
   background: #f3f4f6;
   color: #1f2937;
+}
+
+.actionButton.success {
+  color: #059669;
+  border-color: #a7f3d0;
+}
+
+.actionButton.success:hover {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.actionButton.warning {
+  color: #d97706;
+  border-color: #fde68a;
+}
+
+.actionButton.warning:hover {
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .actionButton.danger {
@@ -649,7 +690,7 @@
 }
 
 @media (max-width: 768px) {
-  .equipmentPage {
+  .usersPage {
     padding: 16px;
   }
 
@@ -709,18 +750,23 @@
     align-items: stretch;
   }
 
-  .tableActions {
+  /* Hide less important columns on mobile */
+  .usersTable th:nth-child(5),
+  .usersTable th:nth-child(7),
+  .usersTable th:nth-child(8),
+  .usersTable td:nth-child(5),
+  .usersTable td:nth-child(7),
+  .usersTable td:nth-child(8) {
+    display: none;
+  }
+
+  .actions {
+    flex-direction: row;
     justify-content: center;
   }
 
-  /* Hide less important columns on mobile */
-  .equipmentTable th:nth-child(4),
-  .equipmentTable th:nth-child(7),
-  .equipmentTable th:nth-child(8),
-  .equipmentTable td:nth-child(4),
-  .equipmentTable td:nth-child(7),
-  .equipmentTable td:nth-child(8) {
-    display: none;
+  .actionGroup {
+    flex-direction: column;
   }
 }
 
@@ -740,10 +786,20 @@
   }
 
   /* Show only essential columns on very small screens */
-  .equipmentTable th:nth-child(3),
-  .equipmentTable th:nth-child(5),
-  .equipmentTable td:nth-child(3),
-  .equipmentTable td:nth-child(5) {
+  .usersTable th:nth-child(4),
+  .usersTable th:nth-child(6),
+  .usersTable td:nth-child(4),
+  .usersTable td:nth-child(6) {
     display: none;
+  }
+
+  .userInfo {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
+  .userAvatar {
+    align-self: center;
   }
 }
