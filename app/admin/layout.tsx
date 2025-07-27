@@ -6,17 +6,16 @@ import { usePathname } from 'next/navigation'
 import AdminSidebar from '@/components/layout/AdminSidebar'
 import AdminHeader from '@/components/layout/Header'
 import AdminFooter from '@/components/layout/Footer'
+import { SidebarProvider, useSidebar } from '@/contexts/SidebarContext'
 import styles from '@/styles/layout/admin-layout.module.css'
 
 interface AdminLayoutProps {
   children: React.ReactNode
 }
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+function AdminLayoutContent({ children }: AdminLayoutProps) {
   const pathname = usePathname()
-  const [showSidebar, setShowSidebar] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
+  const { showSidebar, isCollapsed, isMobile, setShowSidebar } = useSidebar()
   const [isLoading, setIsLoading] = useState(true)
 
   // หน้าที่ไม่ต้องการ layout (เฉพาะหน้าเปล่าๆ)
@@ -27,43 +26,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   
   const shouldShowLayout = !noLayoutPages.includes(pathname)
 
-  // Check if mobile
   useEffect(() => {
-    const checkMobile = () => {
-      const isMobileView = window.innerWidth <= 1023
-      setIsMobile(isMobileView)
-      if (!isMobileView) {
-        setShowSidebar(true)
-      }
-    }
-    
-    checkMobile()
     setIsLoading(false)
-    
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
   }, [])
-
-  // Handle outside click for mobile
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (showSidebar && isMobile) {
-        const sidebar = document.querySelector(`.${styles.sidebar}`)
-        const menuToggle = document.querySelector(`.${styles.menuToggle}`)
-        if (sidebar && !sidebar.contains(e.target as Node) && 
-            menuToggle && !menuToggle.contains(e.target as Node)) {
-          setShowSidebar(false)
-        }
-      }
-    }
-    
-    if (showSidebar && isMobile) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [showSidebar, isMobile])
 
   // หากเป็นหน้า login - แสดงเฉพาะ children ไม่มี layout
   if (!shouldShowLayout) {
@@ -90,13 +55,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )}
 
       {/* Admin Sidebar */}
-      <AdminSidebar
-        showSidebar={showSidebar}
-        isCollapsed={isCollapsed}
-        isMobile={isMobile}
-        setShowSidebar={setShowSidebar}
-        setIsCollapsed={setIsCollapsed}
-      />
+      <AdminSidebar />
 
       {/* Main Content */}
       <main className={`${styles.mainContent} ${
@@ -120,5 +79,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <AdminFooter />
       </main>
     </div>
+  )
+}
+
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  return (
+    <SidebarProvider>
+      <AdminLayoutContent>{children}</AdminLayoutContent>
+    </SidebarProvider>
   )
 }

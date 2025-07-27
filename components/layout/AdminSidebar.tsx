@@ -10,6 +10,7 @@ import {
   X, LogOut, UserCheck, AlertTriangle
 } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
+import { useSidebar } from '@/contexts/SidebarContext'
 import styles from '@/styles/components/admin-sidebar.module.css'
 
 interface MenuItem {
@@ -20,23 +21,10 @@ interface MenuItem {
   badgeColor?: 'warning' | 'danger' | 'success' | 'info'
 }
 
-interface AdminSidebarProps {
-  showSidebar: boolean
-  isCollapsed: boolean
-  isMobile: boolean
-  setShowSidebar: (show: boolean) => void
-  setIsCollapsed: (collapsed: boolean) => void
-}
-
-export default function AdminSidebar({
-  showSidebar,
-  isCollapsed,
-  isMobile,
-  setShowSidebar,
-  setIsCollapsed
-}: AdminSidebarProps) {
+export default function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const { showSidebar, isCollapsed, isMobile, setShowSidebar, setIsCollapsed } = useSidebar()
 
   // Admin data (จะมาจาก Context ในอนาคต)
   const adminData = {
@@ -109,7 +97,10 @@ export default function AdminSidebar({
 
   return (
     <>
-      <aside className={`${styles.adminSidebar} ${showSidebar ? styles.sidebarOpen : ''} ${isCollapsed && !isMobile ? styles.collapsed : ''}`}>
+      <aside 
+        data-sidebar
+        className={`${styles.adminSidebar} ${showSidebar ? styles.sidebarOpen : ''} ${isCollapsed && !isMobile ? styles.collapsed : ''}`}
+      >
         {/* Sidebar Header */}
         <div className={styles.sidebarHeader}>
           {!isMobile && (
