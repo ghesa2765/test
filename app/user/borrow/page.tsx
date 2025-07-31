@@ -5,12 +5,49 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { 
   Search, Filter, Package, MapPin, Star, Clock, 
-  CheckCircle, AlertTriangle, XCircle, Plus, Calendar
+  CheckCircle, AlertTriangle, XCircle, Plus, Calendar,
+  AlertCircle, DollarSign  // เพิ่ม icons ใหม่
 } from 'lucide-react'
 import styles from './borrow.module.css'
 
-// Mock Data - อุปกรณ์จริงที่มีในระบบ (ตรงกับ Dashboard และ Smart Booking)
-const mockEquipment = [
+// ✨ อัปเดต Interface ใหม่
+interface Equipment {
+  id: string
+  name: string
+  category: string
+  model: string
+  serialNumber: string
+  location: string
+  status: 'available' | 'borrowed' | 'maintenance' | 'damaged'
+  description: string
+  rating: number
+  borrowCount: number
+  image?: string
+  specifications?: Record<string, string>
+  
+  // ✨ ฟีเจอร์ใหม่: วันหมดอายุการใช้งาน
+  purchaseDate: string
+  warrantyPeriod: number
+  lifespan: number
+  expiryDate: string
+  isNearExpiry?: boolean
+  isExpired?: boolean
+  
+  // ✨ ฟีเจอร์ใหม่: จำนวนอุปกรณ์
+  totalQuantity: number
+  availableQuantity: number
+  borrowedQuantity: number
+  maintenanceQuantity: number
+  damagedQuantity: number
+  
+  // ข้อมูลการยืมปัจจุบัน (ถ้ามี)
+  borrowedBy?: string
+  dueDate?: string
+  maintenanceNote?: string
+}
+
+// ✨ Mock Data ที่อัปเดตแล้ว - รวมฟีเจอร์ใหม่ทั้งหมด
+const mockEquipment: Equipment[] = [
   {
     id: 'EQ001',
     name: 'ไม้ค้ำยัน (คู่)',
@@ -23,6 +60,22 @@ const mockEquipment = [
     rating: 4.8,
     borrowCount: 156,
     image: '/equipment/crutches.jpg',
+    
+    // ข้อมูลวันหมดอายุ
+    purchaseDate: '2020-01-15',
+    warrantyPeriod: 2,
+    lifespan: 5,
+    expiryDate: '2025-01-15',
+    isNearExpiry: false,
+    isExpired: false,
+    
+    // ข้อมูลจำนวนอุปกรณ์
+    totalQuantity: 10,
+    availableQuantity: 7,
+    borrowedQuantity: 2,
+    maintenanceQuantity: 1,
+    damagedQuantity: 0,
+    
     specifications: {
       material: 'อลูมิเนียม',
       adjustable: 'ปรับได้ 10 ระดับ',
@@ -43,6 +96,22 @@ const mockEquipment = [
     image: '/equipment/walker4.jpg',
     borrowedBy: 'นิคม ใจดี',
     dueDate: '2025-01-25',
+    
+    // ข้อมูลวันหมดอายุ
+    purchaseDate: '2021-03-10',
+    warrantyPeriod: 3,
+    lifespan: 7,
+    expiryDate: '2028-03-10',
+    isNearExpiry: false,
+    isExpired: false,
+    
+    // ข้อมูลจำนวนอุปกรณ์
+    totalQuantity: 8,
+    availableQuantity: 5,
+    borrowedQuantity: 2,
+    maintenanceQuantity: 1,
+    damagedQuantity: 0,
+    
     specifications: {
       height: 'ปรับได้ 81-96 cm',
       weight: '2.3 กก.',
@@ -51,62 +120,6 @@ const mockEquipment = [
   },
   {
     id: 'EQ003',
-    name: 'Walker 1 ขา',
-    category: 'อุปกรณ์ช่วยเหลือ',
-    model: 'WK001',
-    serialNumber: 'WK001789',
-    location: 'ห้องกายภาพบำบัด',
-    status: 'available',
-    description: 'เครื่องช่วยเดิน 1 ขา น้ำหนักเบา เหมาะสำหรับผู้สูงอายุ',
-    rating: 4.7,
-    borrowCount: 234,
-    image: '/equipment/walker1.jpg',
-    specifications: {
-      height: 'ปรับได้ 76-86 cm',
-      weight: '0.9 กก.',
-      grip: 'จับกันลื่น'
-    }
-  },
-  {
-    id: 'EQ004',
-    name: 'หุ่น CPR (ตัว)',
-    category: 'อุปกรณ์ฝึกอบรม',
-    model: 'CPR001',
-    serialNumber: 'CPR001234',
-    location: 'ห้องฝึกปฏิบัติ',
-    status: 'available',
-    description: 'หุ่นฝึกปฏิบัติการช่วยชีวิตขั้นพื้นฐาน (CPR) พร้อมเซนเซอร์',
-    rating: 4.8,
-    borrowCount: 67,
-    image: '/equipment/cpr-manikin.jpg',
-    specifications: {
-      features: 'เซนเซอร์แรงกด',
-      feedback: 'แสงและเสียงแจ้งเตือน',
-      training: 'มาตรฐาน AHA'
-    }
-  },
-  {
-    id: 'EQ005',
-    name: 'วิลแชร์',
-    category: 'อุปกรณ์ช่วยเหลือ',
-    model: 'WC001',
-    serialNumber: 'WC001456',
-    location: 'ห้องผู้ป่วยนอก',
-    status: 'borrowed',
-    description: 'รถเข็นผู้ป่วย สำหรับผู้ป่วยที่ไม่สามารถเดินได้',
-    rating: 4.6,
-    borrowCount: 198,
-    image: '/equipment/wheelchair.jpg',
-    borrowedBy: 'สมชาย ดีใจ',
-    dueDate: '2025-01-23',
-    specifications: {
-      seat: 'กว้าง 46 cm',
-      capacity: 'รับน้ำหนักได้ 100 กก.',
-      brake: 'เบรกล้อหลัง'
-    }
-  },
-  {
-    id: 'EQ006',
     name: 'เครื่องวัดความดัน',
     category: 'อุปกรณ์ตรวจวัด',
     model: 'BP001',
@@ -117,6 +130,22 @@ const mockEquipment = [
     rating: 4.9,
     borrowCount: 423,
     image: '/equipment/blood-pressure.jpg',
+    
+    // ข้อมูลวันหมดอายุ (เกือบหมดอายุ)
+    purchaseDate: '2020-02-01',
+    warrantyPeriod: 3,
+    lifespan: 5,
+    expiryDate: '2025-02-01',
+    isNearExpiry: true,  // เกือบหมดอายุ
+    isExpired: false,
+    
+    // ข้อมูลจำนวนอุปกรณ์
+    totalQuantity: 5,
+    availableQuantity: 3,
+    borrowedQuantity: 1,
+    maintenanceQuantity: 0,
+    damagedQuantity: 1,
+    
     specifications: {
       accuracy: '±3 mmHg',
       memory: '90 ครั้ง',
@@ -124,96 +153,72 @@ const mockEquipment = [
     }
   },
   {
-    id: 'EQ007',
-    name: 'กระเป๋าวัคซีน',
-    category: 'อุปกรณ์การแพทย์',
-    model: 'EB001',
-    serialNumber: 'EB001234',
-    location: 'ห้องเวชภัณฑ์',
+    id: 'EQ004',
+    name: 'วิลแชร์',
+    category: 'อุปกรณ์ช่วยเหลือ',
+    model: 'WC001',
+    serialNumber: 'WC001456',
+    location: 'ห้องผู้ป่วยนอก',
     status: 'maintenance',
-    description: 'กระเป๋าเก็บวัคซีนแบบควบคุมอุณหภูมิ',
-    rating: 4.7,
-    borrowCount: 89,
-    image: '/equipment/vaccine-bag.jpg',
-    maintenanceNote: 'กำลังเปลี่ยนระบบทำความเย็น',
+    description: 'รถเข็นผู้ป่วย สำหรับผู้ป่วยที่ไม่สามารถเดินได้',
+    rating: 4.6,
+    borrowCount: 198,
+    image: '/equipment/wheelchair.jpg',
+    maintenanceNote: 'เปลี่ยนล้อใหม่',
+    
+    // ข้อมูลวันหมดอายุ (หมดอายุแล้ว)
+    purchaseDate: '2019-01-01',
+    warrantyPeriod: 2,
+    lifespan: 5,
+    expiryDate: '2024-01-01',
+    isNearExpiry: false,
+    isExpired: true,  // หมดอายุแล้ว
+    
+    // ข้อมูลจำนวนอุปกรณ์
+    totalQuantity: 6,
+    availableQuantity: 0,  // ไม่มีให้ยืม
+    borrowedQuantity: 3,
+    maintenanceQuantity: 2,
+    damagedQuantity: 1,
+    
     specifications: {
-      temperature: '2-8°C',
-      capacity: '50 โดส',
-      battery: '24 ชั่วโมง'
+      seat: 'กว้าง 46 cm',
+      capacity: 'รับน้ำหนักได้ 100 กก.',
+      brake: 'เบรกล้อหลัง'
     }
   },
   {
-    id: 'EQ008',
-    name: 'กระเป๋าน้ำร้อน',
-    category: 'อุปกรณ์บำบัด',
-    model: 'HB001',
-    serialNumber: 'HB001567',
-    location: 'ห้องฟิสิโอเธอราปี',
+    id: 'EQ005',
+    name: 'หุ่น CPR (ตัว)',
+    category: 'อุปกรณ์ฝึกอบรม',
+    model: 'CPR001',
+    serialNumber: 'CPR001234',
+    location: 'ห้องฝึกปฏิบัติ',
     status: 'available',
-    description: 'กระเป๋าน้ำร้อนสำหรับบำบัดอาการปวดกล้ามเนื้อ',
-    rating: 4.5,
-    borrowCount: 145,
-    image: '/equipment/hot-water-bag.jpg',
-    specifications: {
-      material: 'ยางธรรมชาติ',
-      capacity: '2 ลิตร',
-      safety: 'ฝาปิดนิรภัย'
-    }
-  },
-  {
-    id: 'EQ009',
-    name: 'วัดอุณหภูมิศีรษะดิจิทัล',
-    category: 'อุปกรณ์ตรวจวัด',
-    model: 'PC001',
-    serialNumber: 'PC001890',
-    location: 'ห้องตรวจทั่วไป',
-    status: 'available',
-    description: 'เครื่องวัดอุณหภูมิแบบดิจิทัล วัดจากศีรษะแบบไม่สัมผัส',
+    description: 'หุ่นฝึกปฏิบัติการช่วยชีวิตขั้นพื้นฐาน (CPR) พร้อมเซนเซอร์',
     rating: 4.8,
-    borrowCount: 267,
-    image: '/equipment/forehead-thermometer.jpg',
+    borrowCount: 67,
+    image: '/equipment/cpr-manikin.jpg',
+    
+    // ข้อมูลวันหมดอายุ
+    purchaseDate: '2022-06-15',
+    warrantyPeriod: 5,
+    lifespan: 10,
+    expiryDate: '2032-06-15',
+    isNearExpiry: false,
+    isExpired: false,
+    
+    // ข้อมูลจำนวนอุปกรณ์
+    totalQuantity: 3,
+    availableQuantity: 2,
+    borrowedQuantity: 1,
+    maintenanceQuantity: 0,
+    damagedQuantity: 0,
+    
     specifications: {
-      range: '32.0-42.9°C',
-      accuracy: '±0.2°C',
-      response: '1 วินาที'
-    }
-  },
-  {
-    id: 'EQ010',
-    name: 'ปรอทวัดไข้',
-    category: 'อุปกรณ์ตรวจวัด',
-    model: 'TH001',
-    serialNumber: 'TH001456',
-    location: 'ห้องพยาบาล',
-    status: 'borrowed',
-    description: 'เทอร์โมมิเตอร์แบบดิจิทัล สำหรับวัดอุณหภูมิร่างกาย',
-    rating: 4.4,
-    borrowCount: 356,
-    image: '/equipment/digital-thermometer.jpg',
-    borrowedBy: 'พยาบาลสุดา',
-    dueDate: '2025-01-22',
-    specifications: {
-      type: 'ปากและใต้วงแขน',
-      accuracy: '±0.1°C',
-      memory: '10 ครั้งล่าสุด'
-    }
-  },
-  {
-    id: 'EQ011',
-    name: 'เสาน้ำเกลือ',
-    category: 'อุปกรณ์การแพทย์',
-    model: 'IV001',
-    serialNumber: 'IV001789',
-    location: 'ห้องฉีดยา',
-    status: 'available',
-    description: 'เสาแขวนถุงน้ำเกลือ ปรับความสูงได้ มีล้อเลื่อน',
-    rating: 4.7,
-    borrowCount: 178,
-    image: '/equipment/iv-stand.jpg',
-    specifications: {
-      height: 'ปรับได้ 120-200 cm',
-      wheels: '4 ล้อ มีเบรก',
-      hooks: '4 ตะขอแขวน'
+      features: 'เซนเซอร์แรงกด',
+      feedback: 'แสงและเสียงแจ้งเตือน',
+      training: 'มาตรฐาน AHA'
     }
   }
 ]
@@ -240,42 +245,156 @@ const locations = [
   'ห้องฉีดยา'
 ]
 
-interface EquipmentCardProps {
-  equipment: any
-  onBorrow: (equipment: any) => void
-  onBook: (equipment: any) => void
+// ✨ ฟังก์ชันคำนวณวันหมดอายุ
+const calculateExpiryStatus = (expiryDate: string) => {
+  const expiry = new Date(expiryDate)
+  const today = new Date()
+  const daysUntilExpiry = Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  
+  return {
+    isExpired: daysUntilExpiry < 0,
+    isNearExpiry: daysUntilExpiry >= 0 && daysUntilExpiry <= 30,
+    daysUntilExpiry: Math.abs(daysUntilExpiry)
+  }
 }
 
+// ✨ Component สำหรับแสดงสถานะอุปกรณ์
+function QuantityDisplay({ equipment }: { equipment: Equipment }) {
+  return (
+    <div className={styles.quantityInfo}>
+      <div className={styles.quantityItem}>
+        <span className={styles.quantityLabel}>ยืมได้:</span>
+        <span className={`${styles.quantityValue} ${equipment.availableQuantity === 0 ? styles.unavailable : styles.available}`}>
+          {equipment.availableQuantity}/{equipment.totalQuantity}
+        </span>
+      </div>
+      
+      {equipment.borrowedQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>กำลังยืม:</span>
+          <span className={styles.quantityValue}>{equipment.borrowedQuantity}</span>
+        </div>
+      )}
+      
+      {equipment.maintenanceQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>ซ่อม:</span>
+          <span className={`${styles.quantityValue} ${styles.maintenance}`}>
+            {equipment.maintenanceQuantity}
+          </span>
+        </div>
+      )}
+      
+      {equipment.damagedQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>เสียหาย:</span>
+          <span className={`${styles.quantityValue} ${styles.damaged}`}>
+            {equipment.damagedQuantity}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ✨ Component สำหรับแสดงสถานะหมดอายุ
+function ExpiryWarning({ equipment }: { equipment: Equipment }) {
+  const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+  
+  if (expiryStatus.isExpired) {
+    return (
+      <div className={styles.expiryWarning}>
+        <XCircle size={16} />
+        <span>หมดอายุการใช้งานแล้ว ({expiryStatus.daysUntilExpiry} วันแล้ว)</span>
+      </div>
+    )
+  }
+  
+  if (expiryStatus.isNearExpiry) {
+    return (
+      <div className={styles.expiryNearWarning}>
+        <AlertTriangle size={16} />
+        <span>เกือบหมดอายุ (อีก {expiryStatus.daysUntilExpiry} วัน)</span>
+      </div>
+    )
+  }
+  
+  return null
+}
+
+interface EquipmentCardProps {
+  equipment: Equipment
+  onBorrow: (equipment: Equipment) => void
+  onBook: (equipment: Equipment) => void
+}
+
+// ✨ อัปเดต EquipmentCard Component
 function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: string, equipment: Equipment) => {
+    // เช็คหมดอายุก่อน
+    const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+    if (expiryStatus.isExpired) {
+      return <XCircle className={styles.statusIconExpired} />
+    }
+    
+    // เช็คจำนวนที่ยืมได้
+    if (equipment.availableQuantity === 0 && status === 'available') {
+      return <XCircle className={styles.statusIconUnavailable} />
+    }
+    
     switch (status) {
       case 'available': return <CheckCircle className={styles.statusIconAvailable} />
       case 'borrowed': return <Clock className={styles.statusIconBorrowed} />
       case 'maintenance': return <AlertTriangle className={styles.statusIconMaintenance} />
-      case 'broken': return <XCircle className={styles.statusIconBroken} />
+      case 'damaged': return <XCircle className={styles.statusIconBroken} />
       default: return null
     }
   }
 
-  const getStatusText = (status: string) => {
+  const getStatusText = (status: string, equipment: Equipment) => {
+    // เช็คหมดอายุก่อน
+    const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+    if (expiryStatus.isExpired) {
+      return 'หมดอายุ'
+    }
+    
+    // เช็คจำนวนที่ยืมได้
+    if (equipment.availableQuantity === 0 && status === 'available') {
+      return 'ไม่มีให้ยืม'
+    }
+    
     switch (status) {
       case 'available': return 'พร้อมใช้งาน'
       case 'borrowed': return 'ถูกยืม'
       case 'maintenance': return 'ซ่อมบำรุง'
-      case 'broken': return 'เสียหาย'
+      case 'damaged': return 'เสียหาย'
       default: return 'ไม่ทราบ'
     }
   }
 
-  const getStatusClass = (status: string) => {
+  const getStatusClass = (status: string, equipment: Equipment) => {
+    // เช็คหมดอายุก่อน
+    const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+    if (expiryStatus.isExpired) {
+      return styles.statusExpired
+    }
+    
+    // เช็คจำนวนที่ยืมได้
+    if (equipment.availableQuantity === 0 && status === 'available') {
+      return styles.statusUnavailable
+    }
+    
     switch (status) {
       case 'available': return styles.statusAvailable
       case 'borrowed': return styles.statusBorrowed
       case 'maintenance': return styles.statusMaintenance
-      case 'broken': return styles.statusBroken
+      case 'damaged': return styles.statusBroken
       default: return ''
     }
   }
+
+  const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+  const canBorrow = equipment.availableQuantity > 0 && !expiryStatus.isExpired && equipment.status === 'available'
 
   return (
     <div className={styles.equipmentCard}>
@@ -284,9 +403,9 @@ function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
           <Package size={48} />
         </div>
         <div className={styles.equipmentBadge}>
-          <span className={`${styles.statusBadge} ${getStatusClass(equipment.status)}`}>
-            {getStatusIcon(equipment.status)}
-            {getStatusText(equipment.status)}
+          <span className={`${styles.statusBadge} ${getStatusClass(equipment.status, equipment)}`}>
+            {getStatusIcon(equipment.status, equipment)}
+            {getStatusText(equipment.status, equipment)}
           </span>
         </div>
       </div>
@@ -317,6 +436,12 @@ function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
           </div>
         </div>
 
+        {/* ✨ แสดงจำนวนอุปกรณ์ */}
+        <QuantityDisplay equipment={equipment} />
+
+        {/* ✨ แสดงคำเตือนหมดอายุ */}
+        <ExpiryWarning equipment={equipment} />
+
         {equipment.status === 'borrowed' && (
           <div className={styles.borrowedInfo}>
             <p className={styles.borrowedBy}>ถูกยืมโดย: {equipment.borrowedBy}</p>
@@ -331,7 +456,7 @@ function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
         )}
 
         <div className={styles.equipmentActions}>
-          {equipment.status === 'available' ? (
+          {canBorrow ? (
             <>
               <button 
                 onClick={() => onBorrow(equipment)}
@@ -352,10 +477,10 @@ function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
             <button 
               onClick={() => onBook(equipment)}
               className={`${styles.actionButton} ${styles.queueButton}`}
-              disabled={equipment.status === 'broken'}
+              disabled={expiryStatus.isExpired}
             >
               <Clock size={16} />
-              {equipment.status === 'broken' ? 'ไม่พร้อมใช้' : 'จองคิว'}
+              {expiryStatus.isExpired ? 'หมดอายุ' : 'จองคิว'}
             </button>
           )}
         </div>
@@ -366,13 +491,13 @@ function EquipmentCard({ equipment, onBorrow, onBook }: EquipmentCardProps) {
 
 export default function BorrowPage() {
   const searchParams = useSearchParams()
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '')
+  const [searchTerm, setSearchTerm] = useState(searchParams?.get('q') || '')
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด')
   const [selectedLocation, setSelectedLocation] = useState('ทั้งหมด')
   const [selectedStatus, setSelectedStatus] = useState('ทั้งหมด')
   const [sortBy, setSortBy] = useState('name')
   const [showFilters, setShowFilters] = useState(false)
-  const [selectedEquipment, setSelectedEquipment] = useState(null)
+  const [selectedEquipment, setSelectedEquipment] = useState<Equipment | null>(null)
   const [showBorrowModal, setShowBorrowModal] = useState(false)
   const [showBookModal, setShowBookModal] = useState(false)
 
@@ -402,18 +527,44 @@ export default function BorrowPage() {
     }
   })
 
-  const handleBorrow = (equipment: any) => {
+  const handleBorrow = (equipment: Equipment) => {
+    // ✨ เช็คสถานะก่อนยืม
+    const expiryStatus = calculateExpiryStatus(equipment.expiryDate)
+    
+    if (expiryStatus.isExpired) {
+      alert('⚠️ ไม่สามารถยืมได้\nเนื่องจากอุปกรณ์หมดอายุการใช้งานแล้ว')
+      return
+    }
+    
+    if (equipment.availableQuantity === 0) {
+      alert('⚠️ ไม่สามารถยืมได้\nเนื่องจากอุปกรณ์ไม่มีให้บริการ')
+      return
+    }
+    
     setSelectedEquipment(equipment)
     setShowBorrowModal(true)
   }
 
-  const handleBook = (equipment: any) => {
+  const handleBook = (equipment: Equipment) => {
     setSelectedEquipment(equipment)
     setShowBookModal(true)
   }
 
-  const availableCount = filteredEquipment.filter(item => item.status === 'available').length
+  const availableCount = filteredEquipment.filter(item => {
+    const expiryStatus = calculateExpiryStatus(item.expiryDate)
+    return item.availableQuantity > 0 && !expiryStatus.isExpired
+  }).length
+  
   const totalCount = filteredEquipment.length
+  const expiredCount = filteredEquipment.filter(item => {
+    const expiryStatus = calculateExpiryStatus(item.expiryDate)
+    return expiryStatus.isExpired
+  }).length
+  
+  const nearExpiryCount = filteredEquipment.filter(item => {
+    const expiryStatus = calculateExpiryStatus(item.expiryDate)
+    return expiryStatus.isNearExpiry
+  }).length
 
   return (
     <div className={styles.borrowPage}>
@@ -424,6 +575,24 @@ export default function BorrowPage() {
           ค้นหาและยืมอุปกรณ์การแพทย์ที่ต้องการ
         </p>
       </div>
+
+      {/* ✨ แจ้งเตือนอุปกรณ์หมดอายุ */}
+      {(expiredCount > 0 || nearExpiryCount > 0) && (
+        <div className={styles.alertSection}>
+          {expiredCount > 0 && (
+            <div className={styles.alertExpired}>
+              <XCircle size={20} />
+              <span>มีอุปกรณ์หมดอายุ {expiredCount} รายการ</span>
+            </div>
+          )}
+          {nearExpiryCount > 0 && (
+            <div className={styles.alertNearExpiry}>
+              <AlertTriangle size={20} />
+              <span>มีอุปกรณ์เกือบหมดอายุ {nearExpiryCount} รายการ</span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Search and Filters */}
       <div className={styles.searchSection}>
@@ -510,9 +679,24 @@ export default function BorrowPage() {
       <div className={styles.resultsHeader}>
         <div className={styles.resultsCount}>
           <h2>ผลการค้นหา ({totalCount} รายการ)</h2>
-          <p className={styles.availableCount}>
-            พร้อมใช้งาน: {availableCount} รายการ
-          </p>
+          <div className={styles.statsGrid}>
+            <p className={styles.availableCount}>
+              <CheckCircle size={16} />
+              พร้อมใช้งาน: {availableCount} รายการ
+            </p>
+            {nearExpiryCount > 0 && (
+              <p className={styles.nearExpiryCount}>
+                <AlertTriangle size={16} />
+                เกือบหมดอายุ: {nearExpiryCount} รายการ
+              </p>
+            )}
+            {expiredCount > 0 && (
+              <p className={styles.expiredCount}>
+                <XCircle size={16} />
+                หมดอายุ: {expiredCount} รายการ
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
@@ -536,7 +720,7 @@ export default function BorrowPage() {
         )}
       </div>
 
-      {/* Borrow Modal */}
+      {/* ✨ Borrow Modal - เพิ่มคำเตือนค่าปรับ */}
       {showBorrowModal && selectedEquipment && (
         <div className={styles.modal}>
           <div className={styles.modalContent}>
@@ -555,6 +739,10 @@ export default function BorrowPage() {
                 <h4>{selectedEquipment.name}</h4>
                 <p>{selectedEquipment.model}</p>
                 <p>{selectedEquipment.location}</p>
+                <div className={styles.availableInfo}>
+                  <CheckCircle size={16} />
+                  <span>มีให้ยืม: {selectedEquipment.availableQuantity} ชิ้น</span>
+                </div>
               </div>
 
               <div className={styles.borrowForm}>
@@ -574,6 +762,19 @@ export default function BorrowPage() {
                     <option value="3">3 วัน</option>
                     <option value="7">1 สัปดาห์</option>
                   </select>
+                </div>
+
+                {/* ✨ คำเตือนค่าปรับ */}
+                <div className={styles.fineWarning}>
+                  <div className={styles.fineWarningHeader}>
+                    <DollarSign size={20} />
+                    <h5>ข้อมูลค่าปรับ</h5>
+                  </div>
+                  <div className={styles.fineDetails}>
+                    <p>• ค่าปรับการคืนล่าช้า: <strong>10 บาทต่อวัน</strong></p>
+                    <p>• ช่วงเวลาผ่อนผัน: <strong>24 ชั่วโมง</strong></p>
+                    <p>• กรุณาคืนตรงเวลาเพื่อหลีกเลี่ยงค่าปรับ</p>
+                  </div>
                 </div>
 
                 <div className={styles.noteBox}>
@@ -597,7 +798,7 @@ export default function BorrowPage() {
               </button>
               <button 
                 onClick={() => {
-                  alert('ส่งคำขอยืมเรียบร้อยแล้ว!')
+                  alert('✅ ส่งคำขอยืมเรียบร้อยแล้ว!\nกรุณารอการอนุมัติจากเจ้าหน้าที่')
                   setShowBorrowModal(false)
                 }}
                 className={styles.confirmButton}
@@ -697,7 +898,7 @@ export default function BorrowPage() {
               </button>
               <button 
                 onClick={() => {
-                  alert('ส่งคำขอจองเรียบร้อยแล้ว!')
+                  alert('✅ ส่งคำขอจองเรียบร้อยแล้ว!\nกรุณารอการยืนยันจากเจ้าหน้าที่')
                   setShowBookModal(false)
                 }}
                 className={styles.confirmButton}

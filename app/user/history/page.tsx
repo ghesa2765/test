@@ -6,11 +6,28 @@ import {
   Calendar, Clock, Search, Filter, Package, MapPin, 
   Star, CheckCircle, AlertTriangle, XCircle, Download,
   Eye, ThumbsUp, ThumbsDown, MessageSquare, BarChart3,
-  TrendingUp, Award, History as HistoryIcon
+  TrendingUp, Award, History as HistoryIcon, DollarSign
 } from 'lucide-react'
 import styles from './history.module.css'
 
-// Mock Data with original rating system
+// ✨ Interface สำหรับการตั้งค่าค่าปรับ
+interface FineSettings {
+  gracePeriod: number // ช่วงผ่อนผัน (ชั่วโมง)
+  unit: 'hour' | 'day' // หน่วยการคิดค่าปรับ
+  finePerHour?: number // ค่าปรับต่อชั่วโมง
+  finePerDay: number // ค่าปรับต่อวัน
+  maxFine?: number // ค่าปรับสูงสุด
+}
+
+// ✨ การตั้งค่าค่าปรับเริ่มต้น
+const defaultFineSettings: FineSettings = {
+  gracePeriod: 2, // ผ่อนผัน 2 ชั่วโมง
+  unit: 'day',
+  finePerDay: 10, // 10 บาทต่อวัน
+  maxFine: 500 // ค่าปรับสูงสุด 500 บาท
+}
+
+// Mock Data with fine information (updated)
 const mockHistory = [
   {
     id: 'BH001',
@@ -27,7 +44,8 @@ const mockHistory = [
     rating: 5,
     feedback: 'ใช้งานง่าย ผลลัพธ์แม่นยำ เหมาะสำหรับการเรียนรู้',
     borrowDuration: 2,
-    lateReturn: false
+    lateReturn: false,
+    isPaid: true
   },
   {
     id: 'BH002',
@@ -44,7 +62,8 @@ const mockHistory = [
     rating: 4,
     feedback: 'อุปกรณ์ครบครัน แต่ไฟฉายค่อนข้างมืด',
     borrowDuration: 2,
-    lateReturn: false
+    lateReturn: false,
+    isPaid: true
   },
   {
     id: 'BH003',
@@ -57,7 +76,8 @@ const mockHistory = [
     status: 'active',
     purpose: 'ฝึกปฏิบัติการตรวจสุขภาพ',
     borrowDuration: null,
-    lateReturn: false
+    lateReturn: false,
+    isPaid: true
   },
   {
     id: 'BH004',
@@ -66,16 +86,17 @@ const mockHistory = [
     equipmentModel: 'Accu-Chek Active',
     location: 'ห้องตรวจ A',
     borrowDate: '2025-01-05',
-    returnDate: '2025-01-08',
+    returnDate: '2025-01-09', // คืนช้า 2 วัน
     dueDate: '2025-01-07',
     status: 'returned',
     purpose: 'การวิจัยระดับน้ำตาล',
     condition: 'ดี',
     rating: 4,
     feedback: 'ทำงานได้ดี แต่ต้องใช้แถบทดสอบเยอะ',
-    borrowDuration: 3,
+    borrowDuration: 4,
     lateReturn: true,
-    lateDays: 1
+    lateDays: 2,
+    isPaid: false // ยังไม่จ่ายค่าปรับ
   },
   {
     id: 'BH005',
@@ -84,19 +105,74 @@ const mockHistory = [
     equipmentModel: 'SonoSite MicroMaxx',
     location: 'ห้องตรวจ B',
     borrowDate: '2024-12-20',
-    returnDate: '2024-12-22',
+    returnDate: '2024-12-25', // คืนช้า 3 วัน
     dueDate: '2024-12-22',
     status: 'returned',
     purpose: 'ฝึกการใช้เครื่อง Ultrasound',
     condition: 'ดี',
     rating: 5,
     feedback: 'เครื่องมือที่ยอดเยี่ยม ภาพชัดเจน',
-    borrowDuration: 2,
-    lateReturn: false
+    borrowDuration: 5,
+    lateReturn: true,
+    lateDays: 3,
+    isPaid: true // จ่ายค่าปรับแล้ว
   }
 ]
 
-// Original mockStats with averageRating
+// ✨ ฟังก์ชันคำนวณค่าปรับ
+const calculateFine = (dueDate: string, returnDate: string, fineSettings: FineSettings) => {
+  const due = new Date(dueDate)
+  const returned = new Date(returnDate)
+  const diffTime = returned.getTime() - due.getTime()
+  
+  if (diffTime <= 0) return 0 // คืนตรงเวลาหรือก่อนกำหนด
+  
+  const diffHours = Math.ceil(diffTime / (1000 * 60 * 60))
+  const gracePeriodHours = fineSettings.gracePeriod
+  
+  if (diffHours <= gracePeriodHours) return 0 // อยู่ในช่วงผ่อนผัน
+  
+  const lateHours = diffHours - gracePeriodHours
+  let fineAmount = 0
+  
+  if (fineSettings.unit === 'day') {
+    const lateDays = Math.ceil(lateHours / 24)
+    fineAmount = lateDays * fineSettings.finePerDay
+  } else {
+    fineAmount = lateHours * (fineSettings.finePerHour || 1)
+  }
+  
+  return Math.min(fineAmount, fineSettings.maxFine || fineAmount)
+}
+
+// ✨ Component สำหรับแสดงค่าปรับ
+function FineDisplay({ record, fineSettings }: { record: any, fineSettings: FineSettings }) {
+  if (record.status !== 'returned' || !record.returnDate) return null
+  
+  const fineAmount = calculateFine(record.dueDate, record.returnDate, fineSettings)
+  
+  if (fineAmount === 0) return null
+  
+  return (
+    <div className={styles.fineInfo}>
+      <div className={styles.fineAmount}>
+        <DollarSign size={16} className={styles.fineIcon} />
+        <span className={styles.fineLabel}>ค่าปรับ:</span>
+        <span className={`${styles.fineValue} ${record.isPaid ? styles.paid : styles.unpaid}`}>
+          {fineAmount.toLocaleString()} บาท
+        </span>
+        {!record.isPaid && (
+          <span className={styles.unpaidBadge}>ยังไม่จ่าย</span>
+        )}
+        {record.isPaid && (
+          <span className={styles.paidBadge}>จ่ายแล้ว</span>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Original mockStats with averageRating and fine stats
 const mockStats = {
   totalBorrows: 12,
   completedBorrows: 10,
@@ -107,7 +183,11 @@ const mockStats = {
   lateReturns: 1,
   favoriteCategory: 'การตรวจวัด',
   totalDays: 28,
-  monthlyBorrows: [2, 3, 4, 1, 2]
+  monthlyBorrows: [2, 3, 4, 1, 2],
+  // ✨ เพิ่มสถิติค่าปรับ
+  totalFines: 50, // ค่าปรับรวม
+  unpaidFines: 20, // ค่าปรับที่ยังไม่จ่าย
+  paidFines: 30 // ค่าปรับที่จ่ายแล้ว
 }
 
 // Beautiful gradient icons
@@ -176,6 +256,20 @@ const BeautifulIcons = {
     }}>
       <Calendar size={size * 0.6} color="white" />
     </div>
+  ),
+  // ✨ เพิ่ม Icon สำหรับค่าปรับ
+  DollarSign: ({ size = 24 }) => (
+    <div style={{
+      width: size,
+      height: size,
+      background: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+      borderRadius: '8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      <DollarSign size={size * 0.6} color="white" />
+    </div>
   )
 }
 
@@ -206,9 +300,11 @@ interface HistoryCardProps {
   record: any
   onViewDetails: (record: any) => void
   onRate: (record: any, rating: number) => void
+  fineSettings: FineSettings // ✨ เพิ่ม prop สำหรับการตั้งค่าค่าปรับ
 }
 
-function HistoryCard({ record, onViewDetails, onRate }: HistoryCardProps) {
+// ✨ อัปเดต HistoryCard ให้แสดงค่าปรับ
+function HistoryCard({ record, onViewDetails, onRate, fineSettings }: HistoryCardProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'returned':
@@ -278,6 +374,9 @@ function HistoryCard({ record, onViewDetails, onRate }: HistoryCardProps) {
             <span>คืนช้า {record.lateDays} วัน</span>
           </div>
         )}
+
+        {/* ✨ เพิ่มการแสดงค่าปรับ */}
+        <FineDisplay record={record} fineSettings={fineSettings} />
 
         {record.status === 'active' && (
           <div className={styles.activeBorrowInfo}>
@@ -351,8 +450,8 @@ function HistoryCard({ record, onViewDetails, onRate }: HistoryCardProps) {
   )
 }
 
-// PDF Export Function - สร้าง PDF จริงๆ
-const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFilter: string) => {
+// PDF Export Function - สร้าง PDF จริงๆ (updated with fine information)
+const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFilter: string, fineSettings: FineSettings) => {
   try {
     // Create a new window for printing
     const printWindow = window.open('', '_blank')
@@ -361,6 +460,14 @@ const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFil
       alert('กรุณาอนุญาตให้เปิด popup window เพื่อสร้าง PDF')
       return
     }
+
+    // Calculate total fines
+    const totalFines = filteredHistory.reduce((sum, record) => {
+      if (record.status === 'returned' && record.returnDate) {
+        return sum + calculateFine(record.dueDate, record.returnDate, fineSettings)
+      }
+      return sum
+    }, 0)
 
     // Create HTML content for PDF
     const htmlContent = `
@@ -408,6 +515,14 @@ const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFil
             background: #f8fafc; 
             border-radius: 8px;
             border: 1px solid #e5e7eb;
+          }
+          
+          .fine-summary {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fef2f2;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
           }
           
           .record { 
@@ -507,6 +622,22 @@ const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFil
             font-weight: bold;
           }
           
+          .fine-info {
+            margin: 10px 0;
+            padding: 8px;
+            background: #fff7ed;
+            border-left: 4px solid #ea580c;
+            font-weight: bold;
+          }
+          
+          .fine-unpaid {
+            color: #dc2626;
+          }
+          
+          .fine-paid {
+            color: #059669;
+          }
+          
           .footer {
             margin-top: 30px; 
             text-align: center; 
@@ -559,7 +690,19 @@ const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFil
           <strong>จำนวนรายการ:</strong> ${filteredHistory.length} รายการ
         </div>
 
-        ${filteredHistory.map((record, index) => `
+        ${totalFines > 0 ? `
+        <div class="fine-summary">
+          <strong>💰 สรุปค่าปรับ:</strong><br>
+          <strong>ค่าปรับรวม:</strong> ${totalFines.toLocaleString()} บาท
+        </div>
+        ` : ''}
+
+        ${filteredHistory.map((record, index) => {
+          const fineAmount = record.status === 'returned' && record.returnDate 
+            ? calculateFine(record.dueDate, record.returnDate, fineSettings) 
+            : 0
+          
+          return `
           <div class="record">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
               <div>
@@ -623,8 +766,17 @@ const exportToPDF = async (filteredHistory: any[], searchTerm: string, statusFil
               ⚠️ คืนช้า ${record.lateDays} วัน
             </div>
             ` : ''}
-          </div>
-        `).join('')}
+
+            ${fineAmount > 0 ? `
+            <div class="fine-info">
+              <strong>💰 ค่าปรับ:</strong> 
+              <span class="${record.isPaid ? 'fine-paid' : 'fine-unpaid'}">
+                ${fineAmount.toLocaleString()} บาท ${record.isPaid ? '(จ่ายแล้ว)' : '(ยังไม่จ่าย)'}
+              </span>
+            </div>
+            ` : ''}
+          </div>`
+        }).join('')}
         
         <div class="footer">
           <div>📊 รายงานนี้สร้างโดยระบบยืม-จองอุปกรณ์ RSU Medical Clinic</div>
@@ -674,6 +826,7 @@ export default function HistoryPage() {
   const [showDetails, setShowDetails] = useState(false)
   const [selectedRecord, setSelectedRecord] = useState(null)
   const [activeTab, setActiveTab] = useState('history')
+  const [fineSettings] = useState<FineSettings>(defaultFineSettings) // ✨ เพิ่ม state สำหรับการตั้งค่าค่าปรับ
 
   const handleViewDetails = (record: any) => {
     setSelectedRecord(record)
@@ -686,7 +839,7 @@ export default function HistoryPage() {
   }
 
   const handleExportPDF = () => {
-    exportToPDF(filteredHistory, searchTerm, statusFilter)
+    exportToPDF(filteredHistory, searchTerm, statusFilter, fineSettings) // ✨ ส่ง fineSettings
   }
 
   // Filter and sort history
@@ -762,6 +915,15 @@ export default function HistoryPage() {
           <div className={styles.statInfo}>
             <span className={styles.statNumber}>{mockStats.totalDays}</span>
             <span className={styles.statLabel}>วันที่ใช้รวม</span>
+          </div>
+        </div>
+
+        {/* ✨ เพิ่มการ์ดแสดงค่าปรับ */}
+        <div className={styles.statCard}>
+          <BeautifulIcons.DollarSign size={48} />
+          <div className={styles.statInfo}>
+            <span className={styles.statNumber}>{mockStats.unpaidFines}</span>
+            <span className={styles.statLabel}>ค่าปรับค้าง (บาท)</span>
           </div>
         </div>
       </div>
@@ -851,6 +1013,7 @@ export default function HistoryPage() {
                     record={record}
                     onViewDetails={handleViewDetails}
                     onRate={handleRate}
+                    fineSettings={fineSettings} // ✨ ส่ง fineSettings
                   />
                 ))}
               </div>
@@ -916,6 +1079,11 @@ export default function HistoryPage() {
                 <div className={styles.patternItem}>
                   <span className={styles.patternLabel}>การยืมเฉลี่ยต่อเดือน</span>
                   <span className={styles.patternValue}>{(mockStats.totalBorrows / 5).toFixed(1)} ครั้ง</span>
+                </div>
+                {/* ✨ เพิ่มสถิติค่าปรับ */}
+                <div className={styles.patternItem}>
+                  <span className={styles.patternLabel}>ค่าปรับทั้งหมด</span>
+                  <span className={styles.patternValue}>{mockStats.totalFines} บาท</span>
                 </div>
               </div>
             </div>

@@ -215,6 +215,16 @@
   background: #6b7280;
 }
 
+.statusBadge.expired {
+  background: #dc2626;
+  color: white;
+}
+
+.statusBadge.unavailable {
+  background: #6b7280;
+  color: white;
+}
+
 .statusIconAvailable,
 .statusIconBorrowed,
 .statusIconMaintenance,
@@ -299,6 +309,86 @@
   color: #6b7280;
 }
 
+/* ✨ CSS สำหรับแสดงจำนวนอุปกรณ์ */
+.quantityInfo {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.quantityItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.quantityLabel {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.quantityValue {
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.quantityValue.available {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.quantityValue.unavailable {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.quantityValue.maintenance {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.quantityValue.damaged {
+  background: #fecaca;
+  color: #dc2626;
+}
+
+/* ✨ CSS สำหรับแจ้งเตือนหมดอายุ */
+.expiryWarning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  color: #dc2626;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.expiryNearWarning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #fffbeb;
+  border: 1px solid #fed7aa;
+  border-radius: 6px;
+  color: #d97706;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
 .borrowedInfo,
 .maintenanceInfo {
   background: #fef3c7;
@@ -370,6 +460,13 @@
 
 .queueButton:disabled {
   background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ✨ ปรับปุ่มเมื่อไม่สามารถยืมได้ */
+.actionButton:disabled {
+  background: #9ca3af !important;
+  color: #6b7280 !important;
   cursor: not-allowed;
 }
 

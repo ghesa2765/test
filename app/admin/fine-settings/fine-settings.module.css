@@ -1,0 +1,373 @@
+/* app/admin/fine-settings/fine-settings.module.css */
+
+.fineSettingsPage {
+  padding: 24px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+/* =============== HEADER =============== */
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+}
+
+.description {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* =============== MESSAGE ALERTS =============== */
+.message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.message.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #34d399;
+}
+
+.message.error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #f87171;
+}
+
+/* =============== SETTINGS CARD =============== */
+.settingsCard {
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e5e7eb;
+}
+
+.settingsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+/* =============== SETTING GROUPS =============== */
+.settingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* =============== RADIO GROUP =============== */
+.radioGroup {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: #374151;
+  background: white;
+}
+
+.radioLabel:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.radioLabel input[type="radio"] {
+  margin: 0;
+}
+
+.radioLabel input[type="radio"]:checked + * {
+  /* This targets the icon after the radio */
+}
+
+.radioLabel:has(input[type="radio"]:checked) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+/* =============== INPUT FIELDS =============== */
+.inputWrapper {
+  position: relative;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  z-index: 1;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #374151;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder {
+  color: #9ca3af;
+}
+
+.helpText {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* =============== TOGGLE SWITCH =============== */
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #374151;
+}
+
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  margin: 0;
+  opacity: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #d1d5db;
+  border-radius: 24px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.toggleSlider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background: white;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle:checked + .toggleSlider {
+  background: #3b82f6;
+}
+
+.toggle:checked + .toggleSlider::before {
+  transform: translateX(24px);
+}
+
+.toggle:focus + .toggleSlider {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* =============== PREVIEW SECTION =============== */
+.previewSection {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 24px;
+  margin-bottom: 24px;
+}
+
+.previewTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 16px 0;
+}
+
+.previewCard {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.previewCard p {
+  margin: 0 0 8px 0;
+  color: #475569;
+  font-size: 14px;
+}
+
+.previewCard p:last-child {
+  margin: 0;
+}
+
+.previewAmount {
+  font-size: 16px !important;
+  color: #dc2626 !important;
+}
+
+.previewAmount strong {
+  font-size: 18px;
+}
+
+/* =============== ACTIONS =============== */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 16px;
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.saveButton:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* =============== LAST UPDATED =============== */
+.lastUpdated {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* =============== RESPONSIVE DESIGN =============== */
+@media (max-width: 1024px) {
+  .settingsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fineSettingsPage {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .settingsCard {
+    padding: 24px;
+  }
+
+  .settingsGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .radioGroup {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .previewCard {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fineSettingsPage {
+    padding: 12px;
+  }
+
+  .settingsCard {
+    padding: 16px;
+  }
+
+  .radioLabel {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .input {
+    padding: 10px 12px 10px 36px;
+    font-size: 13px;
+  }
+
+  .inputIcon {
+    left: 10px;
+  }
+}

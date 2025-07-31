@@ -746,4 +746,51 @@
   .equipmentTable td:nth-child(5) {
     display: none;
   }
+  /* สถานะหมดอายุ */
+.expired {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.nearExpiry {
+  background-color: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fed7aa;
+}
+
+.normal {
+  background-color: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+
+/* จำนวนคงเหลือ */
+.quantityBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+/* ปรับขนาดตาราง */
+.equipmentTable th:nth-child(8),
+.equipmentTable td:nth-child(8) {
+  min-width: 120px; /* สถานะหมดอายุ */
+}
+
+.equipmentTable th:nth-child(9),
+.equipmentTable td:nth-child(9) {
+  min-width: 100px; /* จำนวนคงเหลือ */
+  text-align: center;
+}
+
+/* สถิติหมดอายุ */
+.statsGrid .statCard:last-child .statIcon {
+  color: #f59e0b;
+}
 }
