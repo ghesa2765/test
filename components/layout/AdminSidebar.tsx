@@ -7,7 +7,8 @@ import Link from 'next/link'
 import { 
   LayoutDashboard, Package2, Users, ClipboardCheck, 
   BarChart3, Settings, ChevronLeft, ChevronRight, 
-  X, LogOut, UserCheck, AlertTriangle
+  X, LogOut, UserCheck, AlertTriangle, DollarSign,
+  Calculator
 } from 'lucide-react'
 import Logo from '@/components/ui/Logo'
 import { useSidebar } from '@/contexts/SidebarContext'
@@ -51,7 +52,7 @@ export default function AdminSidebar() {
       path: '/admin/approvals', 
       label: 'อนุมัติคำขอ', 
       icon: <ClipboardCheck size={20} />,
-      badge: '7',
+      badge: '3',
       badgeColor: 'warning'
     },
     { 
@@ -63,6 +64,18 @@ export default function AdminSidebar() {
       path: '/admin/reports', 
       label: 'รายงาน', 
       icon: <BarChart3 size={20} /> 
+    },
+    { 
+      path: '/admin/fines', 
+      label: 'จัดการค่าปรับ', 
+      icon: <DollarSign size={20} />,
+      badge: '5',
+      badgeColor: 'danger'
+    },
+    { 
+      path: '/admin/fine-settings', 
+      label: 'ตั้งค่าค่าปรับ', 
+      icon: <Calculator size={20} /> 
     },
     { 
       path: '/admin/maintenance', 

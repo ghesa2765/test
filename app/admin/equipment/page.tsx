@@ -1,120 +1,89 @@
-// app/admin/equipment/page.tsx
+// app/admin/equipment/page.tsx - เวอร์ชันอัปเดต
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { 
-  Plus, 
-  Search, 
-  Filter, 
-  MoreHorizontal, 
-  Edit, 
-  Trash2, 
-  Eye,
-  Download,
-  Upload,
-  Settings
+  Plus, Search, Filter, MoreHorizontal, Edit, Trash2, Eye,
+  Download, Upload, Settings, AlertTriangle, XCircle, 
+  Package, Calendar, DollarSign
 } from 'lucide-react'
+import { 
+  calculateExpiryStatus,
+  generateMockEquipment,
+  ExpiryNotification,
+  generateExpiryNotifications
+} from '@/utils/equipment'  
+import ExpiryNotifications from '@/components/admin/ExpiryNotifications'
 import styles from '@/styles/pages/admin-equipment.module.css'
 
-interface Equipment {
-  id: string
-  code: string
-  name: string
-  category: {
-    name: string
-    icon: string
+// ✨ Enhanced Equipment interface เพื่อรองรับฟีเจอร์ใหม่
+interface EnhancedEquipment extends Equipment {
+  expiryStatus?: {
+    isExpired: boolean
+    isNearExpiry: boolean
+    daysUntilExpiry: number
+    warningMessage?: string
   }
-  location: {
-    name: string
-  }
-  status: 'AVAILABLE' | 'BORROWED' | 'MAINTENANCE' | 'DAMAGED'
-  condition: 'EXCELLENT' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED'
-  totalBorrows: number
-  lastBorrow?: {
-    user: string
-    date: string
-  }
-  createdAt: string
 }
 
-// Mock data with Thai equipment
-const mockEquipment: Equipment[] = [
-  {
-    id: '1',
-    code: 'HEM-001',
-    name: 'เครื่องวัดความดันโลหิต OMRON',
-    category: { name: 'อุปกรณ์ตรวจวัด', icon: '🩺' },
-    location: { name: 'ห้องตรวจ A' },
-    status: 'AVAILABLE',
-    condition: 'GOOD',
-    totalBorrows: 45,
-    createdAt: '2024-01-15'
-  },
-  {
-    id: '2',
-    code: 'CPR-001',
-    name: 'หุ่นจำลอง CPR',
-    category: { name: 'อุปกรณ์ฝึกอบรม', icon: '🫁' },
-    location: { name: 'ห้องฝึกปฏิบัติ' },
-    status: 'BORROWED',
-    condition: 'GOOD',
-    totalBorrows: 23,
-    lastBorrow: { user: 'นพ.สมชาย ใจดี', date: '2024-01-20' },
-    createdAt: '2024-01-10'
-  },
-  {
-    id: '3',
-    code: 'WLK-001',
-    name: 'วอกเกอร์ 4 ขา',
-    category: { name: 'อุปกรณ์ช่วยเหลือ', icon: '🚶' },
-    location: { name: 'ห้องกายภาพบำบัด' },
-    status: 'MAINTENANCE',
-    condition: 'FAIR',
-    totalBorrows: 67,
-    createdAt: '2023-12-05'
-  },
-  {
-    id: '4',
-    code: 'TMP-001',
-    name: 'เครื่องวัดอุณหภูมิดิจิทัล',
-    category: { name: 'อุปกรณ์ตรวจวัด', icon: '🌡️' },
-    location: { name: 'ห้องตรวจ B' },
-    status: 'AVAILABLE',
-    condition: 'EXCELLENT',
-    totalBorrows: 89,
-    createdAt: '2024-01-08'
-  },
-  {
-    id: '5',
-    code: 'WCH-001',
-    name: 'วิลแชร์',
-    category: { name: 'อุปกรณ์ช่วยเหลือ', icon: '♿' },
-    location: { name: 'ห้องผู้ป่วยนอก' },
-    status: 'DAMAGED',
-    condition: 'POOR',
-    totalBorrows: 156,
-    createdAt: '2023-11-20'
-  }
-]
-
-const categories = ['ทั้งหมด', 'อุปกรณ์ตรวจวัด', 'อุปกรณ์ฝึกอบรม', 'อุปกรณ์ช่วยเหลือ', 'อุปกรณ์การแพทย์']
-const statuses = ['ทั้งหมด', 'AVAILABLE', 'BORROWED', 'MAINTENANCE', 'DAMAGED']
-const conditions = ['ทั้งหมด', 'EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED']
-
-export default function EquipmentManagementPage() {
-  const [equipment, setEquipment] = useState<Equipment[]>(mockEquipment)
-  const [filteredEquipment, setFilteredEquipment] = useState<Equipment[]>(mockEquipment)
+export default function EnhancedEquipmentManagementPage() {
+  const [equipment, setEquipment] = useState<EnhancedEquipment[]>([])
+  const [filteredEquipment, setFilteredEquipment] = useState<EnhancedEquipment[]>([])
+  const [expiryNotifications, setExpiryNotifications] = useState<ExpiryNotification[]>([])
+  const [loading, setLoading] = useState(true)
+  
+  // Filters
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด')
   const [selectedStatus, setSelectedStatus] = useState('ทั้งหมด')
   const [selectedCondition, setSelectedCondition] = useState('ทั้งหมด')
+  const [showExpiredOnly, setShowExpiredOnly] = useState(false)
+  const [showNearExpiryOnly, setShowNearExpiryOnly] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'grid'>('table')
-  const [isLoading, setIsLoading] = useState(false)
 
-  // Filter and search logic
+  const categories = ['ทั้งหมด', 'อุปกรณ์ตรวจวัด', 'อุปกรณ์ฝึกอบรม', 'อุปกรณ์ช่วยเหลือ', 'อุปกรณ์การแพทย์']
+  const statuses = ['ทั้งหมด', 'available', 'borrowed', 'maintenance', 'damaged']
+  const conditions = ['ทั้งหมด', 'EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'DAMAGED']
+
+  // Load data
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      try {
+        // จำลองการโหลดข้อมูล
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        const mockData = generateMockEquipment()
+        
+        // ✨ เพิ่มข้อมูลสถานะหมดอายุ
+        const filteredNotifications = notifications.filter((item: ExpiryNotification) => 
+  item.equipmentName.toLowerCase().includes(searchTerm.toLowerCase())
+)
+        const enhancedData = mockData.map(item => ({
+        
+          ...item,
+          expiryStatus: calculateExpiryStatus(item.expiryDate)
+        }))
+        
+        setEquipment(enhancedData)
+        
+        // ✨ สร้างการแจ้งเตือนหมดอายุ
+        const notifications = generateExpiryNotifications(mockData)
+        setExpiryNotifications(notifications)
+        
+      } catch (error) {
+        console.error('Failed to load equipment:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadData()
+  }, [])
+
+  // ✨ Enhanced filtering with expiry status
   useEffect(() => {
     let filtered = equipment
 
@@ -122,14 +91,14 @@ export default function EquipmentManagementPage() {
     if (searchQuery.trim()) {
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category.name.toLowerCase().includes(searchQuery.toLowerCase())
+        item.model.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
 
     // Category filter
     if (selectedCategory !== 'ทั้งหมด') {
-      filtered = filtered.filter(item => item.category.name === selectedCategory)
+      filtered = filtered.filter(item => item.category === selectedCategory)
     }
 
     // Status filter
@@ -137,13 +106,100 @@ export default function EquipmentManagementPage() {
       filtered = filtered.filter(item => item.status === selectedStatus)
     }
 
-    // Condition filter
-    if (selectedCondition !== 'ทั้งหมด') {
-      filtered = filtered.filter(item => item.condition === selectedCondition)
+    // ✨ Expiry filters
+    if (showExpiredOnly) {
+      filtered = filtered.filter(item => item.expiryStatus?.isExpired)
+    }
+
+    if (showNearExpiryOnly) {
+      filtered = filtered.filter(item => item.expiryStatus?.isNearExpiry)
     }
 
     setFilteredEquipment(filtered)
-  }, [equipment, searchQuery, selectedCategory, selectedStatus, selectedCondition])
+  }, [equipment, searchQuery, selectedCategory, selectedStatus, selectedCondition, showExpiredOnly, showNearExpiryOnly])
+
+  // ✨ Enhanced statistics
+  const stats = useMemo(() => {
+    const total = equipment.length
+    const available = equipment.filter(item => item.status === 'available').length
+    const borrowed = equipment.filter(item => item.status === 'borrowed').length
+    const maintenance = equipment.filter(item => item.status === 'maintenance').length
+    const damaged = equipment.filter(item => item.status === 'damaged').length
+    const expired = equipment.filter(item => item.expiryStatus?.isExpired).length
+    const nearExpiry = equipment.filter(item => item.expiryStatus?.isNearExpiry).length
+
+    return { total, available, borrowed, maintenance, damaged, expired, nearExpiry }
+  }, [equipment])
+
+  // ✨ Component สำหรับแสดงสถานะหมดอายุ
+  const ExpiryStatusBadge = ({ equipment }: { equipment: EnhancedEquipment }) => {
+    if (!equipment.expiryStatus) return null
+    
+    const { isExpired, isNearExpiry, daysUntilExpiry, warningMessage } = equipment.expiryStatus
+    
+    if (isExpired) {
+      return (
+        <span className={`${styles.statusBadge} ${styles.expired}`} title={warningMessage}>
+          <XCircle size={12} />
+          หมดอายุ
+        </span>
+      )
+    }
+    
+    if (isNearExpiry) {
+      return (
+        <span className={`${styles.statusBadge} ${styles.nearExpiry}`} title={warningMessage}>
+          <AlertTriangle size={12} />
+          เกือบหมดอายุ ({daysUntilExpiry} วัน)
+        </span>
+      )
+    }
+    
+    return (
+      <span className={`${styles.statusBadge} ${styles.normal}`}>
+        <Calendar size={12} />
+        ปกติ
+      </span>
+    )
+  }
+
+  // ✨ Component สำหรับแสดงจำนวนอุปกรณ์
+  const QuantityInfo = ({ equipment }: { equipment: EnhancedEquipment }) => (
+    <div className={styles.quantityDisplay}>
+      <div className={styles.quantityItem}>
+        <span className={styles.quantityLabel}>ทั้งหมด:</span>
+        <span className={styles.quantityValue}>{equipment.totalQuantity}</span>
+      </div>
+      <div className={styles.quantityItem}>
+        <span className={styles.quantityLabel}>ยืมได้:</span>
+        <span className={`${styles.quantityValue} ${equipment.availableQuantity === 0 ? styles.unavailable : styles.available}`}>
+          {equipment.availableQuantity}
+        </span>
+      </div>
+      {equipment.borrowedQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>ยืม:</span>
+          <span className={styles.quantityValue}>{equipment.borrowedQuantity}</span>
+        </div>
+      )}
+      {equipment.maintenanceQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>ซ่อม:</span>
+          <span className={`${styles.quantityValue} ${styles.maintenance}`}>
+            {equipment.maintenanceQuantity}
+          </span>
+        </div>
+      )}
+      {equipment.damagedQuantity > 0 && (
+        <div className={styles.quantityItem}>
+          <span className={styles.quantityLabel}>เสียหาย:</span>
+          <span className={`${styles.quantityValue} ${styles.damaged}`}>
+            {equipment.damagedQuantity}
+          </span>
+        </div>
+      )}
+    </div>
+  )
 
   const handleSelectAll = () => {
     if (selectedItems.length === filteredEquipment.length) {
@@ -156,371 +212,270 @@ export default function EquipmentManagementPage() {
   const handleSelectItem = (id: string) => {
     setSelectedItems(prev =>
       prev.includes(id)
-        ? prev.filter(item => item !== id)
+        ? prev.filter(itemId => itemId !== id)
         : [...prev, id]
     )
   }
 
-  const getStatusDisplay = (status: Equipment['status']) => {
-    const statusMap = {
-      'AVAILABLE': { text: 'พร้อมใช้', class: 'available' },
-      'BORROWED': { text: 'ถูกยืม', class: 'borrowed' },
-      'MAINTENANCE': { text: 'ซ่อมบำรุง', class: 'maintenance' },
-      'DAMAGED': { text: 'เสียหาย', class: 'damaged' }
-    }
-    return statusMap[status]
-  }
-
-  const getConditionDisplay = (condition: Equipment['condition']) => {
-    const conditionMap = {
-      'EXCELLENT': { text: 'ดีเยี่ยม', class: 'excellent' },
-      'GOOD': { text: 'ดี', class: 'good' },
-      'FAIR': { text: 'พอใช้', class: 'fair' },
-      'POOR': { text: 'แย่', class: 'poor' },
-      'DAMAGED': { text: 'เสียหาย', class: 'damaged' }
-    }
-    return conditionMap[condition]
-  }
-
-  const handleBulkAction = (action: string) => {
-    console.log(`Bulk action: ${action} on items:`, selectedItems)
-    // Implement bulk actions
-  }
-
-  const handleDelete = (id: string) => {
-    if (confirm('คุณแน่ใจหรือไม่ที่จะลบอุปกรณ์นี้?')) {
-      setEquipment(prev => prev.filter(item => item.id !== id))
-      setSelectedItems(prev => prev.filter(item => item !== id))
-    }
-  }
-
-  const handleExport = () => {
-    console.log('Exporting equipment data...')
-    // Implement export functionality
-  }
-
   return (
     <div className={styles.equipmentPage}>
+      {/* ✨ Expiry Notifications - แสดงที่ด้านบน */}
+      {expiryNotifications.length > 0 && (
+        <ExpiryNotifications />
+      )}
+
       {/* Page Header */}
       <div className={styles.pageHeader}>
         <div className={styles.headerContent}>
           <div className={styles.headerLeft}>
-            <h1 className={styles.pageTitle}>🏥 จัดการอุปกรณ์การแพทย์</h1>
+            <h1 className={styles.pageTitle}>
+              <Package size={32} />
+              จัดการอุปกรณ์การแพทย์
+            </h1>
             <p className={styles.pageSubtitle}>
-              จัดการและติดตามอุปกรณ์ทั้งหมดในคลินิก
+              จัดการและติดตามสถานะอุปกรณ์ทั้งหมดในระบบ
             </p>
           </div>
           <div className={styles.headerActions}>
-            <button 
-              className={styles.secondaryButton}
-              onClick={handleExport}
-            >
-              <Download size={18} />
-              ส่งออกข้อมูล
-            </button>
-            <button className={styles.secondaryButton}>
-              <Upload size={18} />
-              นำเข้าข้อมูล
-            </button>
             <Link href="/admin/equipment/add" className={styles.primaryButton}>
-              <Plus size={18} />
+              <Plus size={16} />
               เพิ่มอุปกรณ์ใหม่
             </Link>
+            <button className={styles.secondaryButton}>
+              <Download size={16} />
+              ส่งออกข้อมูล
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Statistics Cards */}
+      {/* ✨ Enhanced Statistics Grid */}
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>📦</div>
+          <div className={styles.statIcon}>
+            <Package size={24} />
+          </div>
           <div className={styles.statContent}>
-            <div className={styles.statValue}>{equipment.length}</div>
-            <div className={styles.statLabel}>อุปกรณ์ทั้งหมد</div>
+            <span className={styles.statValue}>{stats.total}</span>
+            <span className={styles.statLabel}>อุปกรณ์ทั้งหมด</span>
           </div>
         </div>
+
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>✅</div>
+          <div className={styles.statIcon} style={{ color: '#10b981' }}>
+            <Package size={24} />
+          </div>
           <div className={styles.statContent}>
-            <div className={styles.statValue}>
-              {equipment.filter(e => e.status === 'AVAILABLE').length}
-            </div>
-            <div className={styles.statLabel}>พร้อมใช้</div>
+            <span className={styles.statValue}>{stats.available}</span>
+            <span className={styles.statLabel}>พร้อมใช้</span>
           </div>
         </div>
+
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>📋</div>
+          <div className={styles.statIcon} style={{ color: '#f59e0b' }}>
+            <Package size={24} />
+          </div>
           <div className={styles.statContent}>
-            <div className={styles.statValue}>
-              {equipment.filter(e => e.status === 'BORROWED').length}
-            </div>
-            <div className={styles.statLabel}>ถูกยืม</div>
+            <span className={styles.statValue}>{stats.borrowed}</span>
+            <span className={styles.statLabel}>ถูกยืม</span>
           </div>
         </div>
+
         <div className={styles.statCard}>
-          <div className={styles.statIcon}>🔧</div>
+          <div className={styles.statIcon} style={{ color: '#ef4444' }}>
+            <AlertTriangle size={24} />
+          </div>
           <div className={styles.statContent}>
-            <div className={styles.statValue}>
-              {equipment.filter(e => e.status === 'MAINTENANCE').length}
-            </div>
-            <div className={styles.statLabel}>ซ่อมบำรุง</div>
+            <span className={styles.statValue}>{stats.nearExpiry}</span>
+            <span className={styles.statLabel}>เกือบหมดอายุ</span>
+          </div>
+        </div>
+
+        <div className={styles.statCard}>
+          <div className={styles.statIcon} style={{ color: '#dc2626' }}>
+            <XCircle size={24} />
+          </div>
+          <div className={styles.statContent}>
+            <span className={styles.statValue}>{stats.expired}</span>
+            <span className={styles.statLabel}>หมดอายุแล้ว</span>
           </div>
         </div>
       </div>
 
       {/* Search and Filters */}
-      <div className={styles.controlsSection}>
-        <div className={styles.searchSection}>
-          <div className={styles.searchBox}>
-            <Search className={styles.searchIcon} size={20} />
-            <input
-              type="text"
-              placeholder="ค้นหาอุปกรณ์ด้วยชื่อ, รหัส, หรือหมวดหมู่..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className={styles.searchInput}
-            />
-          </div>
+      <div className={styles.searchSection}>
+        <div className={styles.searchBox}>
+          <Search className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="ค้นหาอุปกรณ์..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+
+        <div className={styles.filterControls}>
           <button
-            className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
             onClick={() => setShowFilters(!showFilters)}
+            className={`${styles.filterButton} ${showFilters ? styles.active : ''}`}
           >
-            <Filter size={18} />
+            <Filter size={16} />
             ตัวกรอง
           </button>
         </div>
-
-        {/* Filters */}
-        {showFilters && (
-          <div className={styles.filtersSection}>
-            <div className={styles.filterGroup}>
-              <label>หมวดหมู่:</label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className={styles.filterSelect}
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.filterGroup}>
-              <label>สถานะ:</label>
-              <select
-                value={selectedStatus}
-                onChange={(e) => setSelectedStatus(e.target.value)}
-                className={styles.filterSelect}
-              >
-                {statuses.map(status => (
-                  <option key={status} value={status}>
-                    {status === 'ทั้งหมด' ? status : getStatusDisplay(status as any)?.text || status}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className={styles.filterGroup}>
-              <label>สภาพ:</label>
-              <select
-                value={selectedCondition}
-                onChange={(e) => setSelectedCondition(e.target.value)}
-                className={styles.filterSelect}
-              >
-                {conditions.map(condition => (
-                  <option key={condition} value={condition}>
-                    {condition === 'ทั้งหมด' ? condition : getConditionDisplay(condition as any)?.text || condition}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        )}
-
-        {/* Bulk Actions */}
-        {selectedItems.length > 0 && (
-          <div className={styles.bulkActions}>
-            <span className={styles.selectedCount}>
-              เลือกแล้ว {selectedItems.length} รายการ
-            </span>
-            <div className={styles.bulkButtons}>
-              <button
-                className={styles.bulkButton}
-                onClick={() => handleBulkAction('export')}
-              >
-                ส่งออก
-              </button>
-              <button
-                className={styles.bulkButton}
-                onClick={() => handleBulkAction('update-status')}
-              >
-                เปลี่ยนสถานะ
-              </button>
-              <button
-                className={`${styles.bulkButton} ${styles.danger}`}
-                onClick={() => handleBulkAction('delete')}
-              >
-                ลบ
-              </button>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* ✨ Enhanced Filter Panel */}
+      {showFilters && (
+        <div className={styles.filtersSection}>
+          <div className={styles.filterRow}>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className={styles.filterSelect}
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>{category}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className={styles.filterSelect}
+            >
+              {statuses.map(status => (
+                <option key={status} value={status}>
+                  {status === 'ทั้งหมด' ? 'สถานะทั้งหมด' : 
+                   status === 'available' ? 'พร้อมใช้' :
+                   status === 'borrowed' ? 'ถูกยืม' :
+                   status === 'maintenance' ? 'ซ่อมบำรุง' :
+                   status === 'damaged' ? 'เสียหาย' : status}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.checkboxFilters}>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={showExpiredOnly}
+                onChange={(e) => setShowExpiredOnly(e.target.checked)}
+              />
+              แสดงเฉพาะหมดอายุ ({stats.expired})
+            </label>
+            <label className={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={showNearExpiryOnly}
+                onChange={(e) => setShowNearExpiryOnly(e.target.checked)}
+              />
+              แสดงเฉพาะเกือบหมดอายุ ({stats.nearExpiry})
+            </label>
+          </div>
+        </div>
+      )}
 
       {/* Equipment Table */}
       <div className={styles.tableContainer}>
-        <div className={styles.tableHeader}>
-          <div className={styles.tableTitle}>
-            รายการอุปกรณ์ ({filteredEquipment.length} รายการ)
-          </div>
-          <div className={styles.tableActions}>
-            <button 
-              className={`${styles.viewToggle} ${viewMode === 'table' ? styles.active : ''}`}
-              onClick={() => setViewMode('table')}
-            >
-              ตาราง
-            </button>
-            <button 
-              className={`${styles.viewToggle} ${viewMode === 'grid' ? styles.active : ''}`}
-              onClick={() => setViewMode('grid')}
-            >
-              กริด
-            </button>
-          </div>
-        </div>
-
-        {isLoading ? (
+        {loading ? (
           <div className={styles.loading}>
             <div className={styles.spinner}></div>
             <p>กำลังโหลดข้อมูล...</p>
           </div>
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.equipmentTable}>
-              <thead>
-                <tr>
-                  <th className={styles.checkboxHeader}>
+          <table className={styles.equipmentTable}>
+            <thead>
+              <tr>
+                <th className={styles.checkboxHeader}>
+                  <input
+                    type="checkbox"
+                    checked={selectedItems.length === filteredEquipment.length && filteredEquipment.length > 0}
+                    onChange={handleSelectAll}
+                    className={styles.checkbox}
+                  />
+                </th>
+                <th>รหัส</th>
+                <th>ชื่ออุปกรณ์</th>
+                <th>หมวดหมู่</th>
+                <th>สถานที่</th>
+                <th>สถานะ</th>
+                <th>จำนวน</th>
+                <th>สถานะหมดอายุ</th>
+                <th>การดำเนินการ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEquipment.map(item => (
+                <tr key={item.id} className={styles.tableRow}>
+                  <td>
                     <input
                       type="checkbox"
-                      checked={selectedItems.length === filteredEquipment.length && filteredEquipment.length > 0}
-                      onChange={handleSelectAll}
+                      checked={selectedItems.includes(item.id)}
+                      onChange={() => handleSelectItem(item.id)}
                       className={styles.checkbox}
                     />
-                  </th>
-                  <th>รหัส</th>
-                  <th>ชื่ออุปกรณ์</th>
-                  <th>หมวดหมู่</th>
-                  <th>สถานที่</th>
-                  <th>สถานะ</th>
-                  <th>สภาพ</th>
-                  <th>การใช้งาน</th>
-                  <th>การดำเนินการ</th>
+                  </td>
+                  <td className={styles.codeCell}>
+                    <span className={styles.equipmentCode}>{item.model}</span>
+                  </td>
+                  <td className={styles.nameCell}>
+                    <div className={styles.equipmentName}>
+                      <span className={styles.categoryIcon}>
+                        📦
+                      </span>
+                      <div>
+                        <div className={styles.name}>{item.name}</div>
+                        <div className={styles.serial}>{item.serialNumber}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={styles.category}>
+                      {item.category}
+                    </span>
+                  </td>
+                  <td>{item.location}</td>
+                  <td>
+                    <span className={`${styles.statusBadge} ${styles[item.status]}`}>
+                      {item.status === 'available' ? 'พร้อมใช้' :
+                       item.status === 'borrowed' ? 'ถูกยืม' :
+                       item.status === 'maintenance' ? 'ซ่อมบำรุง' :
+                       item.status === 'damaged' ? 'เสียหาย' : item.status}
+                    </span>
+                  </td>
+                  <td>
+                    <QuantityInfo equipment={item} />
+                  </td>
+                  <td>
+                    <ExpiryStatusBadge equipment={item} />
+                  </td>
+                  <td>
+                    <div className={styles.actions}>
+                      <button className={styles.actionButton} title="ดูรายละเอียด">
+                        <Eye size={14} />
+                      </button>
+                      <button className={styles.actionButton} title="แก้ไข">
+                        <Edit size={14} />
+                      </button>
+                      <button className={styles.actionButton} title="ลบ">
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredEquipment.map((item) => {
-                  const statusInfo = getStatusDisplay(item.status)
-                  const conditionInfo = getConditionDisplay(item.condition)
-                  
-                  return (
-                    <tr key={item.id} className={styles.tableRow}>
-                      <td>
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.id)}
-                          onChange={() => handleSelectItem(item.id)}
-                          className={styles.checkbox}
-                        />
-                      </td>
-                      <td className={styles.codeCell}>
-                        <span className={styles.equipmentCode}>{item.code}</span>
-                      </td>
-                      <td className={styles.nameCell}>
-                        <div className={styles.equipmentName}>
-                          <span className={styles.categoryIcon}>
-                            {item.category.icon}
-                          </span>
-                          <div>
-                            <div className={styles.name}>{item.name}</div>
-                            {item.lastBorrow && (
-                              <div className={styles.lastBorrow}>
-                                ยืมโดย: {item.lastBorrow.user}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={styles.category}>
-                          {item.category.name}
-                        </span>
-                      </td>
-                      <td>{item.location.name}</td>
-                      <td>
-                        <span className={`${styles.statusBadge} ${styles[statusInfo.class]}`}>
-                          {statusInfo.text}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`${styles.conditionBadge} ${styles[conditionInfo.class]}`}>
-                          {conditionInfo.text}
-                        </span>
-                      </td>
-                      <td className={styles.usageCell}>
-                        <div className={styles.usageStats}>
-                          <span className={styles.borrowCount}>
-                            {item.totalBorrows} ครั้ง
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <div className={styles.actions}>
-                          <Link
-                            href={`/admin/equipment/${item.id}`}
-                            className={styles.actionButton}
-                            title="ดูรายละเอียด"
-                          >
-                            <Eye size={16} />
-                          </Link>
-                          <Link
-                            href={`/admin/equipment/edit/${item.id}`}
-                            className={styles.actionButton}
-                            title="แก้ไข"
-                          >
-                            <Edit size={16} />
-                          </Link>
-                          <button
-                            className={`${styles.actionButton} ${styles.danger}`}
-                            onClick={() => handleDelete(item.id)}
-                            title="ลบ"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+              ))}
+            </tbody>
+          </table>
+        )}
 
-            {filteredEquipment.length === 0 && (
-              <div className={styles.emptyState}>
-                <div className={styles.emptyIcon}>📦</div>
-                <h3>ไม่พบอุปกรณ์</h3>
-                <p>ไม่มีอุปกรณ์ที่ตรงกับเงื่อนไขการค้นหา</p>
-                <button
-                  className={styles.primaryButton}
-                  onClick={() => {
-                    setSearchQuery('')
-                    setSelectedCategory('ทั้งหมด')
-                    setSelectedStatus('ทั้งหมด')
-                    setSelectedCondition('ทั้งหมด')
-                  }}
-                >
-                  ล้างตัวกรอง
-                </button>
-              </div>
-            )}
+        {!loading && filteredEquipment.length === 0 && (
+          <div className={styles.emptyState}>
+            <Package size={64} />
+            <h3>ไม่พบอุปกรณ์</h3>
+            <p>ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p>
           </div>
         )}
       </div>
